@@ -1,0 +1,2 @@
+# Preserve baseline file bytes and SHA-256 across clone operations.
+* -text

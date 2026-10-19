@@ -1,0 +1,23 @@
+# Local build output and editor state
+**/build/
+**/build-*/
+**/CMakeFiles/
+**/CMakeCache.txt
+**/compile_commands.json
+**/.vscode/
+**/.idea/
+**/__pycache__/
+*.pyc
+*.log
+*.elf
+*.hex
+*.bin
+*.map
+*.o
+*.a
+# Machine-specific or private configuration
+.env
+.env.*
+*.local
+sdkconfig.old
+COPY_MANIFEST.csv
