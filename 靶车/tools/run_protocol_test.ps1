@@ -1,91 +1,51 @@
 ﻿# ============================================================================
-#  靶车 —— 协议库主机端自测
+#  靶车 —— 协议库主机端自测（CMake 版）
 #
-#  在电脑上直接编译并运行 firmware/lib/protocol/test/test_protocol.c,
-#  不需要插任何硬件。改了 protocol.h 之后务必先跑这个, 再烧板子。
+#  在电脑上直接编译并运行 firmware/lib/protocol/test/test_protocol.c，
+#  不需要插任何硬件。改了 protocol.h 之后务必先跑这个，再烧板子。
 #
 #  用法:
 #     pwsh -File tools\run_protocol_test.ps1
 #
-#  依赖: 本机已安装 Visual Studio (含 C++ 工具集) + Windows SDK。
-#        找不到编译器时脚本会给出提示, 不会静默失败。
+#  这个脚本现在只是 CMake 的一层薄封装。等价的纯 CMake 命令:
+#     cmake --preset all
+#     cmake --build --preset all --target test_protocol
+#     ctest --preset all
+#
+#  注意: 脚本文件保存为 UTF-8 with BOM，否则 Windows PowerShell 5.1
+#        会按 GBK 解读中文注释而报语法错误。
 # ============================================================================
 
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$protoDir = Join-Path $repoRoot 'firmware\lib\protocol'
-$buildDir = Join-Path $protoDir 'test\build'
 
-# ---- 1. 定位编译器 (不依赖 vcvarsall, 直接把路径拼出来) ----
-$vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-$clPath  = $null
+# CMake / Ninja 装在用户目录，新进程可能还没刷新 PATH，这里补一下
+$cmakeBin = Join-Path $env:LOCALAPPDATA 'Programs\CMake\bin'
+$ninjaBin = Join-Path $env:APPDATA 'Python\Python312\Scripts'
+if (Test-Path $cmakeBin) { $env:PATH = "$cmakeBin;$env:PATH" }
+if (Test-Path $ninjaBin) { $env:PATH = "$ninjaBin;$env:PATH" }
 
-if (Test-Path $vswhere) {
-    $vsRoot = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-    if ($vsRoot) {
-        $clPath = Get-ChildItem (Join-Path $vsRoot 'VC\Tools\MSVC\*\bin\Hostx64\x64\cl.exe') -ErrorAction SilentlyContinue |
-                  Sort-Object FullName -Descending | Select-Object -First 1 -ExpandProperty FullName
-    }
-}
-if (-not $clPath) {
-    $clPath = Get-ChildItem 'C:\Program Files\Microsoft Visual Studio\*\*\VC\Tools\MSVC\*\bin\Hostx64\x64\cl.exe' -ErrorAction SilentlyContinue |
-              Sort-Object FullName -Descending | Select-Object -First 1 -ExpandProperty FullName
-}
-if (-not $clPath) {
-    Write-Host '找不到 MSVC 编译器 (cl.exe)。' -ForegroundColor Red
-    Write-Host '请安装 Visual Studio 的「使用 C++ 的桌面开发」工作负载, 或改用 ARM/ESP 工具链交叉编译本测试。'
+$cmake = (Get-Command cmake -ErrorAction SilentlyContinue).Source
+if (-not $cmake) {
+    Write-Host '找不到 cmake。请先按 docs\CMake构建说明.md 第二章安装。' -ForegroundColor Red
     exit 2
 }
-$vcBin = Split-Path -Parent $clPath
-$msvcRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $vcBin))   # ...\MSVC\<ver>
+$ctest = Join-Path (Split-Path -Parent $cmake) 'ctest.exe'
+if (-not (Test-Path $ctest)) { $ctest = 'ctest' }
 
-# ---- 2. Windows SDK ----
-$sdkInc = Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\Include\*' -Directory -ErrorAction SilentlyContinue |
-          Sort-Object Name -Descending | Select-Object -First 1
-$sdkLib = Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\Lib\*' -Directory -ErrorAction SilentlyContinue |
-          Sort-Object Name -Descending | Select-Object -First 1
-if (-not $sdkInc -or -not $sdkLib) {
-    Write-Host '找不到 Windows SDK。' -ForegroundColor Red
-    exit 2
-}
-
-$env:INCLUDE = @(
-    "$($sdkInc.FullName)\ucrt"
-    "$($sdkInc.FullName)\um"
-    "$($sdkInc.FullName)\shared"
-    "$msvcRoot\include"
-) -join ';'
-
-$env:LIB = @(
-    "$($sdkLib.FullName)\ucrt\x64"
-    "$($sdkLib.FullName)\um\x64"
-    "$msvcRoot\lib\x64"
-) -join ';'
-
-$env:PATH = "$vcBin;$env:PATH"
-
-New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
-
-# ---- 3. 编译 ----
-Write-Host "编译器: $clPath" -ForegroundColor DarkGray
-Write-Host "工程:   $protoDir" -ForegroundColor DarkGray
-
-Push-Location $protoDir
+Push-Location $repoRoot
 try {
-    # /W4 视为硬要求: 协议头要能过最高告警等级
-    & $clPath /nologo /utf-8 /W4 /I. `
-        /Fe:"$buildDir\test_protocol.exe" `
-        /Fo:"$buildDir\" `
-        'test\test_protocol.c'
-
+    Write-Host '配置 + 编译 test_protocol ...' -ForegroundColor DarkGray
+    & $cmake --preset all | Out-Null
+    & $cmake --build --preset all --target test_protocol
     if ($LASTEXITCODE -ne 0) {
         Write-Host "编译失败 (exit $LASTEXITCODE)" -ForegroundColor Red
         exit 1
     }
 
-    # ---- 4. 运行 ----
-    & "$buildDir\test_protocol.exe"
+    Write-Host "`n运行协议自测 ..." -ForegroundColor DarkGray
+    & $ctest --preset all --output-on-failure
     $rc = $LASTEXITCODE
 } finally {
     Pop-Location
