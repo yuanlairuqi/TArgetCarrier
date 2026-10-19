@@ -1,0 +1,14 @@
+{
+  "name": "protocol",
+  "version": "1.0.0",
+  "description": "靶车三端 (ESP32主机 / M5Stamp桥接 / STM32F103) 共用的通信协议: 帧格式、CRC16、编解码与编译期断言",
+  "keywords": "protocol, crc16, espnow, can, gimbal",
+  "license": "MIT",
+  "frameworks": "*",
+  "platforms": "*",
+  "build": {
+    "srcFilter": [
+      "+<protocol.c>"
+    ]
+  }
+}
