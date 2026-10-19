@@ -2,15 +2,11 @@
  * @file    test_protocol.c
  * @brief   协议库主机端自测 —— 不依赖任何单片机
  *
- *  用 CMake 跑 (推荐, 在仓库根目录):
- *      cmake --preset all
- *      ctest --preset all
- *  或者只编这一个目标再手动运行:
- *      cmake --build --preset all --target test_protocol
- *      ./build/Debug/test_protocol.exe        # Windows (Visual Studio 生成器)
- *      ./build/test_protocol                  # 单配置生成器
+ *  用 PlatformIO 的 native 环境跑:
+ *      cd firmware/lib/protocol
+ *      pio run -t exec
  *  或在任意有 C 编译器的地方:
- *      gcc -I. test/test_protocol.c -o t -lm && ./t
+ *      gcc -I. test/test_protocol.c -o t && ./t
  */
 
 #include <stdio.h>
