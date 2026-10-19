@@ -24,6 +24,7 @@
 #include "motor_motion.h"
 #include "robot_uart.h"
 #include "board_config.h"
+#include "app_rtos.h"
 
 /* USER CODE END Includes */
 
@@ -100,8 +101,7 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  RobotUART_Init(&BOARD_ROBOT_UART_HANDLE);
-  Motor_StartOnce(&htim1);
+  AppRTOS_Start(&htim1, &BOARD_ROBOT_UART_HANDLE);
 
   /* USER CODE END 2 */
 
@@ -112,8 +112,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    RobotUART_Poll(); /* STOP is processed before a waiting batch can start. */
-    Motor_Process();
+    /* The FreeRTOS scheduler owns control processing. */
   }
   /* USER CODE END 3 */
 }
@@ -351,7 +350,7 @@ static void MX_GPIO_Init(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
+  AppRTOS_Fatal(__FILE__, __LINE__);
   __disable_irq();
   while (1)
   {

@@ -21,3 +21,6 @@
 *.local
 sdkconfig.old
 COPY_MANIFEST.csv
+
+# Local pre-migration recovery snapshots
+_backups/
