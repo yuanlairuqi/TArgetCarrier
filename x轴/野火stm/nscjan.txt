@@ -1,0 +1,13 @@
+$sourceProject = 'C:\Users\y\Desktop\TargetCarrier - ¸±±¾\xÖá\Ò°»ðstm'
+$targetProject = 'C:\Users\y\Desktop\TargetCarrier\xÖá\Ò°»ðstm'
+
+New-Item -ItemType Directory -Path "$targetProject\.vscode" -Force
+
+Copy-Item -LiteralPath "$sourceProject\.vscode\tasks.json" `
+    -Destination "$targetProject\.vscode\tasks.json"
+
+Copy-Item -LiteralPath "$sourceProject\.vscode\daplink-tools.json" `
+    -Destination "$targetProject\.vscode\daplink-tools.json"
+
+Copy-Item -LiteralPath "$sourceProject\tools\vscode_daplink.py" `
+    -Destination "$targetProject\tools\vscode_daplink.py"
