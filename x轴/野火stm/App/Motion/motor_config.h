@@ -9,6 +9,9 @@
 #endif
 #define MOTOR_TARGET_ANGLE_MDEG     22500U
 #define MOTOR_DIRECTION_LEVEL      0U /* GPIO low; physical direction unverified */
+#ifndef MOTOR_STARTUP_ONESHOT_ENABLED
+#define MOTOR_STARTUP_ONESHOT_ENABLED 0U
+#endif
 #define MOTOR_STARTUP_WAIT_MS       1000U /* suggested wait, NOT a T60 specification */
 
 /* Matches .ioc: TIM1 = 72 MHz, PSC = 71, ARR = 9999, CCR1 = 5000. */
@@ -18,11 +21,11 @@
 #define MOTOR_TIMER_COMPARE         5000U
 #define MOTOR_TIMER_BATCH_MAX       256U /* F103 TIM1 RCR has 8 bits */
 
-/* Hardware-dependent continuous mode is OFF until the interface is verified.
+/* Continuous mode is enabled for explicit manual commands; validate hardware before flashing.
  * Values below are software examples, NOT confirmed T60 timing/speed ratings.
  */
 #ifndef MOTOR_CONTINUOUS_ENABLED
-#define MOTOR_CONTINUOUS_ENABLED    0U
+#define MOTOR_CONTINUOUS_ENABLED    1U
 #endif
 #define MOTOR_CONTINUOUS_MIN_HZ     100U
 #define MOTOR_CONTINUOUS_MAX_HZ     1000U

@@ -4,11 +4,11 @@
 
 ## 任务与功能
 
-- control：优先级 2，静态栈 512 words（2048 bytes），每 1 ms 唤醒。初始化 UART 与一次性运动，循环先 RobotUART_Poll，再 Motor_Process。保持 STOP 优先处理、UART 超时和 TIM1 硬件脉冲逻辑。
+- control：优先级 2，静态栈 512 words（2048 bytes），每 1 ms 唤醒。初始化 UART 与 TIM1/PUL/DIR，循环先 RobotUART_Poll，再 Motor_Process。保持 STOP 优先处理、UART 超时和 TIM1 硬件脉冲逻辑。
 - rgb：仅闪灯启用时创建，优先级 1，静态栈 128 words。PA1/PA2/PA3 同时翻转，默认亮100ms、灭100ms，完整周期200ms。低电平点亮；电源指示灯无法软件控制。
 - idle：内核空闲任务，静态栈 128 words。禁用动态分配，不链接 heap_*.c。
 - 断言、任务栈溢出、HAL Error_Handler 和处理器故障进入停止路径，关闭脉冲并挂起，g_rtos_fault_file/line 可用调试器检查。未增加自动恢复。
-- 原有复位后一次定量脉冲动作保留，连续运动开关不变。闪灯不是纯灯测试固件，首次上板请断开驱动器信号。
+- 2026-10-20 起连续运动默认启用，复位后定量脉冲默认关闭；手机明确发出指令后才输出运动脉冲。可通过下列 CMake 开关恢复旧上电动作。ENA 未配置，停止脉冲不表示驱动器禁能。
 - 本轮不改变 ESP 固件、接线或靶车目录。
 
 ## 宏与 CMake
@@ -16,6 +16,8 @@
 - 配置入口：App/RTOS/app_rtos_config.h、FreeRTOSConfig.h、cmake/freertos.cmake。
 - TARGETCARRIER_LED_BLINK：默认 OFF（主工程默认不闪灯），转换成 APP_LED_BLINK_ENABLED 编译宏。
 - TARGETCARRIER_LED_TOGGLE_MS：默认100，转换成 APP_LED_TOGGLE_MS；1..60000ms，改成250则亮250ms、灭250ms。
+- TARGETCARRIER_CONTINUOUS_ENABLED：默认 ON，转换为 MOTOR_CONTINUOUS_ENABLED；允许手动持续正转或反转。
+- TARGETCARRIER_STARTUP_ONESHOT：默认 OFF，转换为 MOTOR_STARTUP_ONESHOT_ENABLED；打开会恢复上电定量动作。
 - 运行中修改参数不生效；宏变化需要重新编译和烧录。
 - 需要 ARM GCC、CMake、Ninja 在本进程 PATH 可用，在本 STM32 目录中执行：
 
@@ -59,3 +61,11 @@ python tools/build_stm32.py --config Debug --led ON --led-ms 100
 ```
 
 工具不在PATH时使用 --cmake、--gcc、--ninja 分别传入可执行文件完整路径。临时目录若包含中文，使用 --work-root 指定已有的ASCII路径目录。本工具只修改子进程PATH，不更改系统环境变量或注册表。
+
+2026-10-20 手动连续控制构建（不自动烧录）：
+
+```powershell
+python tools/build_stm32.py --config Release --continuous ON --startup-oneshot OFF
+```
+
+CMake 可分别传入 `-DTARGETCARRIER_CONTINUOUS_ENABLED=ON` 和 `-DTARGETCARRIER_STARTUP_ONESHOT=OFF`。头文件默认值在 App/Motion/motor_config.h；使用本 CMake 工程时，以 CMake 生成的编译宏为准。默认速度范围100–1000Hz为现有软件示例值，实际方向、频率与驱动器接口需实测。

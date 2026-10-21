@@ -1,5 +1,8 @@
 #ifndef APP_RTOS_CONFIG_H
 #define APP_RTOS_CONFIG_H
+#ifndef APP_OLED_ENABLED
+#define APP_OLED_ENABLED 0 /* CMake enables it; host/control-only builds stay unchanged. */
+#endif
 #ifndef APP_LED_BLINK_ENABLED
 #define APP_LED_BLINK_ENABLED 0
 #endif

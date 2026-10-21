@@ -1008,6 +1008,19 @@ CONFIG_ROBOT_PULSE_DIR_GPIO=7
 # end of GEEK ESP-NOW control input (private pairing required)
 
 #
+# Local diagnostic OLED (panel type must be verified)
+#
+CONFIG_ROBOT_OLED_ENABLED=y
+# default:
+# CONFIG_ROBOT_OLED_SH1106 is not set
+CONFIG_ROBOT_OLED_HEIGHT=64
+CONFIG_ROBOT_OLED_ADDRESS=0
+CONFIG_ROBOT_OLED_SCL_GPIO=9
+CONFIG_ROBOT_OLED_SDA_GPIO=8
+CONFIG_ROBOT_OLED_PERIOD_MS=500
+# end of Local diagnostic OLED (panel type must be verified)
+
+#
 # Compiler options
 #
 # default:
