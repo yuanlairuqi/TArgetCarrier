@@ -101,3 +101,38 @@ config ROBOT_ESPNOW_LMK
     default ""
     depends on ROBOT_ESPNOW_ENABLED
 endmenu
+
+menu "Local diagnostic OLED (panel type must be verified)"
+config ROBOT_OLED_ENABLED
+    bool "Enable independent low-priority OLED status task"
+    default y
+config ROBOT_OLED_SH1106
+    bool "SH1106 (otherwise SSD1306)"
+    default n
+    depends on ROBOT_OLED_ENABLED
+config ROBOT_OLED_HEIGHT
+    int "Height: 32 or 64 pixels"
+    range 32 64
+    default 64
+    depends on ROBOT_OLED_ENABLED
+config ROBOT_OLED_ADDRESS
+    int "7-bit address: 0 auto (0x3c/0x3d), 60 or 61"
+    range 0 61
+    default 0
+    depends on ROBOT_OLED_ENABLED
+config ROBOT_OLED_SCL_GPIO
+    int "SCL GPIO"
+    range 0 48
+    default 9
+    depends on ROBOT_OLED_ENABLED
+config ROBOT_OLED_SDA_GPIO
+    int "SDA GPIO"
+    range 0 48
+    default 8
+    depends on ROBOT_OLED_ENABLED
+config ROBOT_OLED_PERIOD_MS
+    int "Refresh interval in ms"
+    range 250 5000
+    default 500
+    depends on ROBOT_OLED_ENABLED
+endmenu

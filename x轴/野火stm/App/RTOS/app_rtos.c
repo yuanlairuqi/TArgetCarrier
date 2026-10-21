@@ -4,6 +4,10 @@
 #include "task.h"
 #include "robot_uart.h"
 #include "motor_motion.h"
+#include "motor_config.h"
+#if APP_OLED_ENABLED
+#include "status_display.h"
+#endif
 
 static StaticTask_t control_tcb, idle_tcb;
 static StackType_t control_stack[APP_CONTROL_STACK_WORDS];
@@ -21,11 +25,19 @@ static void ControlTask(void *argument)
 {
     (void)argument;
     RobotUART_Init(control_uart);
-    Motor_StartOnce(motion_timer); /* Preserve the original one-shot startup. */
+    Motor_StartOnce(motion_timer); /* Initialize TIM1/PUL/DIR before accepting commands. */
+#if !MOTOR_STARTUP_ONESHOT_ENABLED
+    Motor_Stop(); /* Default: no pulse output until an explicit manual command. */
+#endif
     TickType_t last_wake = xTaskGetTickCount();
     for (;;) {
         RobotUART_Poll(); /* STOP must be processed before any new batch. */
         Motor_Process();
+#if APP_OLED_ENABLED
+        static uint32_t published;
+        uint32_t now=HAL_GetTick();
+        if ((uint32_t)(now-published)>=250U) {StatusDisplay_Publish();published=now;}
+#endif
         (void)xTaskDelayUntil(&last_wake, pdMS_TO_TICKS(APP_CONTROL_PERIOD_MS));
     }
 }
@@ -54,6 +66,9 @@ void AppRTOS_Start(TIM_HandleTypeDef *timer, UART_HandleTypeDef *uart)
 #if APP_LED_BLINK_ENABLED
     configASSERT(xTaskCreateStatic(LedTask, "rgb", APP_LED_STACK_WORDS,
                                   NULL, 1U, led_stack, &led_tcb) != NULL);
+#endif
+#if APP_OLED_ENABLED
+    StatusDisplay_Start();
 #endif
     vTaskStartScheduler();
     AppRTOS_Fatal(__FILE__, __LINE__); /* Scheduling must never return. */

@@ -1,5 +1,6 @@
 #include "pulse_capture.h"
 #include "pulse_wire.h"
+#include "pulse_meter.h"
 #include "sdkconfig.h"
 #include "freertos/FreeRTOS.h"
 #include "esp_log.h"
@@ -13,6 +14,7 @@ static const char *TAG="pulse_capture";
 static pulse_snapshot_t snapshot;
 static portMUX_TYPE capture_lock=portMUX_INITIALIZER_UNLOCKED;
 static bool available,recording;
+static pulse_meter_t live_meter;
 static uint16_t previous_conn=BLE_HS_CONN_HANDLE_NONE;
 static size_t packet_index;
 static int state; // 0 waiting, 1 capturing, 2 transferring
@@ -24,6 +26,9 @@ static mcpwm_cap_channel_handle_t channels[3];
 static bool on_edge(mcpwm_cap_channel_handle_t handle,const mcpwm_capture_event_data_t *event,void *arg){
     (void)handle;unsigned channel=(unsigned)(uintptr_t)arg;
     portENTER_CRITICAL_ISR(&capture_lock);
+    if(channel==0U && event->cap_edge==MCPWM_CAP_EDGE_POS){
+        pulse_meter_edge(&live_meter,event->cap_value,esp_timer_get_time());
+    }
     if(recording){
         // Unsigned subtraction handles the 32-bit hardware timer wrapping.
         uint32_t delta=event->cap_value-start_tick;
@@ -113,4 +118,14 @@ void pulse_capture_poll(uint16_t conn,uint16_t handle,bool subscribed){
         // Never resume an old partial transfer indefinitely.
         if(state==2&&now-transfer_us>5000000){state=0;next_us=now+1000000;}
     }
+}
+
+void pulse_capture_status(pulse_capture_status_t *out){
+    int64_t now=esp_timer_get_time();
+    portENTER_CRITICAL(&capture_lock);
+    out->available=available;
+    out->hz=0;
+    out->recent=available && pulse_meter_read(&live_meter,snapshot.hz,now,&out->hz);
+    portEXIT_CRITICAL(&capture_lock);
+    out->direction=available?(uint8_t)gpio_get_level(snapshot.dir_gpio):0;
 }

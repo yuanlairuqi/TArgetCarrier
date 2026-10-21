@@ -1,0 +1,17 @@
+Verifies
+Verified using v1 scheme (JAR signing): true
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=ESP32 Robot Debug
+Signer #1 certificate SHA-256 digest: 631f1785e3bc9c5838dff3c745ebca54206c59f7b01760b5b18baf76a6bff075
+Signer #1 certificate SHA-1 digest: a0312f8a4e73c848fb67a8ad46e8a52ec9348fcf
+Signer #1 certificate MD5 digest: 0fcc43ea9c8320a86d7f7cf37f0a4f62
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 2048
+Signer #1 public key SHA-256 digest: d44e6368211dfc29d9a1deaec67eabd3abd2f761bd37c996b5825d9a06e06b85
+Signer #1 public key SHA-1 digest: e4564ef6287b96daa34f0a9ebe76a1277684ac85
+Signer #1 public key MD5 digest: f7837f23d3b86c1430ac46a3d69d7769

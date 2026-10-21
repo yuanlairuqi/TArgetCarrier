@@ -1,0 +1,38 @@
+{
+  "source": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp",
+  "build": "C:\\Users\\y\\.codex\\visualizations\\2026\\10\\19\\01a152f9-1c52-71d2-ae2c-1a983c97e188\\function_audit_20261020\\main\\esp32_robot\\build",
+  "port": "COM13",
+  "chip": "ESP32-S3-PICO-1",
+  "mac": "7c:e8:b1:e5:1d:ac",
+  "physical_flash_bytes": 8388608,
+  "configured_flash_bytes": 4194304,
+  "flash_args": [
+    "--flash-mode",
+    "dio",
+    "--flash-size",
+    "4MB",
+    "--flash-freq",
+    "80m"
+  ],
+  "regions": [
+    {
+      "address": 0,
+      "file": "bootloader/bootloader.bin",
+      "bytes": 21120,
+      "sha256": "51cb42c375e883396bb7932bbeb787357570bca199b3d11936b8c6edeac9358f"
+    },
+    {
+      "address": 32768,
+      "file": "partition_table/partition-table.bin",
+      "bytes": 3072,
+      "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    },
+    {
+      "address": 65536,
+      "file": "esp32_robot.bin",
+      "bytes": 496576,
+      "sha256": "0066ac3a99f8a4a40406daf21dddf6705863240f4cd4e0c5b65830404dcc4e3b"
+    }
+  ],
+  "source_verified_against_audit_build": true
+}

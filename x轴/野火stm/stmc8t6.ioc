@@ -31,7 +31,9 @@ Mcu.Pin6=PB10
 Mcu.Pin7=PB11
 Mcu.Pin8=PA8
 Mcu.Pin9=PA9
-Mcu.PinsNb=15
+Mcu.Pin15=PB6
+Mcu.Pin16=PB7
+Mcu.PinsNb=17
 Mcu.ThirdPartyNb=0
 Mcu.UserConstants=
 Mcu.UserName=STM32F103C8Tx
@@ -171,3 +173,15 @@ VP_SYS_VS_Systick.Signal=SYS_VS_Systick
 VP_TIM1_VS_ClockSourceINT.Mode=Internal
 VP_TIM1_VS_ClockSourceINT.Signal=TIM1_VS_ClockSourceINT
 board=custom
+
+PB6.GPIOParameters=GPIO_Label,GPIO_ModeDefaultOutputPP,PinState
+PB6.GPIO_Label=OLED_SCL
+PB6.GPIO_ModeDefaultOutputPP=GPIO_MODE_OUTPUT_OD
+PB6.PinState=GPIO_PIN_SET
+PB6.Signal=GPIO_Output
+
+PB7.GPIOParameters=GPIO_Label,GPIO_ModeDefaultOutputPP,PinState
+PB7.GPIO_Label=OLED_SDA
+PB7.GPIO_ModeDefaultOutputPP=GPIO_MODE_OUTPUT_OD
+PB7.PinState=GPIO_PIN_SET
+PB7.Signal=GPIO_Output

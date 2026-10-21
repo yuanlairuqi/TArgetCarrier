@@ -1,0 +1,35 @@
+{
+  "builds": {
+    "Debug": {
+      "artifact_sha256": {
+        "stmc8t6.elf": "45ed4748fb0f134679e4dd52c04df916f80f9cc51390d4b8c456bd2db26552df",
+        "stmc8t6.hex": "3dbefbfac4d514e85ee5aa7e66096d5f3b69d05580de63113180ca41f59e9719",
+        "stmc8t6.bin": "1a2c28dbbf7246545e5def4e0bc86b37e391068dbec9a64e7f5cd3d994ba962e",
+        "stmc8t6.map": "8af318e0568c0cc4654735f42676f54df585f0a8732be559e17e8725062654ba"
+      },
+      "vectors_valid": true,
+      "continuous": true,
+      "startup_oneshot": false
+    },
+    "Release": {
+      "artifact_sha256": {
+        "stmc8t6.elf": "32f39eb3d67b4e3d818337c45560eabcc2739feabf6cc1c23530433ac392af91",
+        "stmc8t6.hex": "2ea3e4c79d6930ae84992a2316795aabbaa2a0bde08e192372906ce2598d0fd5",
+        "stmc8t6.bin": "a819e934c3b648a1ef9ab71f11b6f61d9e451eecdd80fc64b4423791fb989568",
+        "stmc8t6.map": "c8148681bde300c2312f497f96c94e5aae24234d9914daa8ece5cd35205dcd18"
+      },
+      "vectors_valid": true,
+      "continuous": true,
+      "startup_oneshot": false
+    }
+  },
+  "host_groups_passed": 25,
+  "deliverable_sha256": {
+    "STM32-XAxis-Continuous-Release.bin": "a819e934c3b648a1ef9ab71f11b6f61d9e451eecdd80fc64b4423791fb989568",
+    "STM32-XAxis-Continuous-Release.hex": "2ea3e4c79d6930ae84992a2316795aabbaa2a0bde08e192372906ce2598d0fd5",
+    "TargetCarrier-XAxis-v3.3-debug.apk": "d0d8a7a116916e10ce1ab6096b377673027dd314648fcf82b0b75da50fe33f68"
+  },
+  "apk_original_signing_preserved": true,
+  "flashed": false,
+  "physical_motor_tested": false
+}

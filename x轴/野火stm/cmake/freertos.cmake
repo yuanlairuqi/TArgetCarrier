@@ -37,3 +37,11 @@ file(READ "${CMAKE_CURRENT_SOURCE_DIR}/Core/Src/stm32f1xx_it.c" TC_IRQ_SOURCE)
 if(TC_IRQ_SOURCE MATCHES "void[ \t\r\n]+(SVC_Handler|PendSV_Handler)[ \t\r\n]*\\(")
     message(FATAL_ERROR "CubeMX regenerated SVC/PendSV bodies; restore native FreeRTOS vector ownership")
 endif()
+
+# Manual continuous control, no automatic startup motion by default.
+option(TARGETCARRIER_CONTINUOUS_ENABLED "Allow explicit continuous forward/reverse commands" ON)
+option(TARGETCARRIER_STARTUP_ONESHOT "Run the legacy one-shot pulse test at boot" OFF)
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
+    MOTOR_CONTINUOUS_ENABLED=$<BOOL:${TARGETCARRIER_CONTINUOUS_ENABLED}>
+    MOTOR_STARTUP_ONESHOT_ENABLED=$<BOOL:${TARGETCARRIER_STARTUP_ONESHOT}>
+)

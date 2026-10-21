@@ -22,6 +22,7 @@
 #include "now_protocol.h"
 #include "now_radio.h"
 #include "control_feedback.h"
+#include "oled_status.h"
 static now_control_t wireless;
 static bool wireless_available;
 // UUIDs: 6e400001/2/3-b5a3-f393-e0a9-e50e24dcca9e, little endian in NimBLE.
@@ -182,6 +183,12 @@ static void telemetry_task(void *arg) {
             bridge_request(&bridge,robot.revision,0,0,robot.ack,now);transmit=bridge_tick(&bridge,now,&outgoing);
         }
         robot_status(&robot, now, data); conn=connection; notify=subscribed; pulse_notify=pulse_subscribed;
+        oled_status_t display={.uptime=now/1000U,.motion=robot.motion,.speed=robot.speed,
+            .error=robot.error?robot.error:robot.link_error,.ble=robot.connected,
+            .stm_online=robot.stm_online,.stm_motion=robot.stm_motion,.stm_error=robot.stm_error,
+            .confirmed=bridge.confirmed && !bridge.waiting && bridge.revision==robot.revision &&
+                bridge.completed_phone==robot.ack && bridge.online && (robot.stm_flags&PEER_APPLIED),
+            .source=robot.connected?1U:wireless.active?2U:0U};
         xSemaphoreGive(lock);
         if(transmit&&!uart_link_send(&outgoing))bridge_tx_failed(&bridge);
         if(notify && conn!=BLE_HS_CONN_HANDLE_NONE&&(uint32_t)(now-last_notify)>=100) {
@@ -199,6 +206,10 @@ static void telemetry_task(void *arg) {
             xSemaphoreGive(lock);now_radio_send(response);last_radio_status=now;
         }
         pulse_capture_poll(conn,pulse_handle,pulse_notify);
+        pulse_capture_status_t captured;pulse_capture_status(&captured);
+        display.capture_available=captured.available;display.pulse_recent=captured.recent;
+        display.pulse_hz=captured.hz;display.direction=captured.direction;
+        oled_status_publish(&display);
         vTaskDelay(pdMS_TO_TICKS(20));
     }
 }
@@ -228,5 +239,6 @@ void app_main(void) {
     ESP_ERROR_CHECK(ble_svc_gap_device_name_set("ESP32-Robot"));
     nimble_port_freertos_init(host_task);
     if(xTaskCreate(telemetry_task, "telemetry", 4096, NULL, 5, NULL)!=pdPASS) abort();
+    oled_status_start();
     ESP_LOGI("robot", "Ready: BLE v3 / optional encrypted ESP-NOW WN/1 / UART v2; motor control requires STM32 acknowledgement");
 }

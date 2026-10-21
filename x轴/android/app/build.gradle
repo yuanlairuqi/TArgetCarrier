@@ -1,0 +1,7 @@
+plugins { id 'com.android.application' }
+android {
+    namespace 'cn.robot.ble'
+    compileSdk 35
+    defaultConfig { applicationId 'cn.robot.ble.wildfire'; minSdk 23; targetSdk 35; versionCode 6; versionName '3.3-targetcarrier-xaxis' }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_1_8; targetCompatibility JavaVersion.VERSION_1_8 }
+}
