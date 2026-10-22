@@ -14,7 +14,7 @@
 #include "panel.h"
 static QueueHandle_t status_out,wave_out;
 static portMUX_TYPE display_lock=portMUX_INITIALIZER_UNLOCKED;
-static bool pc_online,output_ack,radio_online;
+static bool pc_online,output_ack,radio_online,radio_provisioned;
 static int speed;
 static uint32_t last_pc,last_radio;
 static void screen_task(void *arg){
@@ -23,7 +23,7 @@ static void screen_task(void *arg){
         portENTER_CRITICAL(&display_lock);
         bool pc=pc_online,ack=output_ack,radio=radio_online;int value=speed;
         portEXIT_CRITICAL(&display_lock);
-        panel_draw(pc,ack,value,radio?"SLAVE STATUS RX":"SLAVE OFFLINE",0x102030,60);
+        panel_draw(pc,ack,value,!radio_provisioned?"PAIRING REQUIRED":radio?"SLAVE ONLINE":"SLAVE OFFLINE",0x102030,60);
         vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
@@ -44,6 +44,7 @@ void app_main(void){
     status_out=xQueueCreate(8,72);wave_out=xQueueCreate(16,72);
     configASSERT(status_out&&wave_out);
     bool provisioned=now_radio_init();
+    radio_provisioned=provisioned;
     xTaskCreate(screen_task,"lcd",4096,NULL,1,NULL);
     usb_parser_t parser={0};uint8_t last_command[64]={0};bool armed_transport=false;
     uint8_t tx[72];size_t tx_at=72;uint32_t info_at=0;
