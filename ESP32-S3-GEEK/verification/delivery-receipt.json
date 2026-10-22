@@ -1,0 +1,63 @@
+{
+  "originals_before": {
+    "slave": {
+      "files": 33,
+      "unchanged": true
+    },
+    "stm32": {
+      "files": 160,
+      "unchanged": true
+    },
+    "pc": {
+      "files": 14,
+      "unchanged": true
+    },
+    "pc_old": {
+      "files": 9,
+      "unchanged": true
+    }
+  },
+  "originals_after": {
+    "slave": {
+      "files": 33,
+      "unchanged": true
+    },
+    "stm32": {
+      "files": 160,
+      "unchanged": true
+    },
+    "pc": {
+      "files": 14,
+      "unchanged": true
+    },
+    "pc_old": {
+      "files": 9,
+      "unchanged": true
+    }
+  },
+  "deliveries": {
+    "ESP32-S3-GEEK": {
+      "path": "C:\\Users\\y\\Desktop\\TargetCarrier\\ESP32-S3-GEEK",
+      "source_files": 23,
+      "source_hashes_equal": true,
+      "app_sha256": "9c310aca5b17a61da5cd4383ab8a894992e0501207902df41ee07b37c7e955d1"
+    },
+    "slave": {
+      "path": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022",
+      "source_files": 34,
+      "source_hashes_equal": true,
+      "app_sha256": "ff32615805006a586bacf43b005e2464635d8ca693a74b780c165d99e67d864e"
+    }
+  },
+  "no_flash": true,
+  "no_hardware_test": true,
+  "branch": "codex/geek-wireless-master-20261022",
+  "pc_delivery": {
+    "path": "D:\\TargetCarrier-PC-Vue-USB_20261022",
+    "exe_sha256": "0a58409fdc49f1ce36fa3f54a86e2348f8dc564aea28ef530de115ac5c461223",
+    "original_checked_files": 14,
+    "delivered_files": 359
+  },
+  "final_master_and_slave_source_match": true,
+  "final_pc_source_match": true
+}

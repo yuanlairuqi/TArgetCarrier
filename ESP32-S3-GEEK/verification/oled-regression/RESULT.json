@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "groups": 16,
+  "hardware_tested": false,
+  "native_workdir": "C:\\Users\\y\\AppData\\Local\\Temp\\targetcarrier-oled-tests-t4az82gu",
+  "tests": [
+    {
+      "name": "stm_oled",
+      "groups": 6,
+      "log": "PASS full 128x64 frame and cleared trailing pixels\r\nPASS 128x32 second-bank pagination\r\nPASS SH1106 offset and alternate address\r\nPASS absent device and mid-frame IO failure stop immediately\r\nPASS invalid geometry and shifted address rejected before IO\r\nPASS maximum text width bounded\r\n"
+    },
+    {
+      "name": "esp_oled",
+      "groups": 6,
+      "log": "PASS full 128x64 frame and cleared trailing pixels\r\nPASS 128x32 second-bank pagination\r\nPASS SH1106 offset and alternate address\r\nPASS absent device and mid-frame IO failure stop immediately\r\nPASS invalid geometry and shifted address rejected before IO\r\nPASS maximum text width bounded\r\n"
+    },
+    {
+      "name": "pulse_meter",
+      "groups": 4,
+      "log": "PASS frequency requires two rising edges\r\nPASS stale samples and first edge after idle cannot reuse old frequency\r\nPASS 32-bit capture counter wrap\r\nPASS zero-period and invalid timestamps rejected\r\n"
+    }
+  ]
+}

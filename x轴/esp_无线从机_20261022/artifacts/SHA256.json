@@ -1,0 +1,9 @@
+{
+  "build.log": "2a9c1c5099d8e10e3da1bc74196bebb644dcde9d161c5565ebf7f8f663f81694",
+  "esp32_robot.bin": "ff32615805006a586bacf43b005e2464635d8ca693a74b780c165d99e67d864e",
+  "esp32_robot.elf": "e6ff12c94f7d22e84ed0b114bfe8cf78d3480b00da16df052861436a376aa776",
+  "sdkconfig": "ceaf163144b3ac8908bed445bf8f1f871672c53b8c2838821fb3b85d6def8060",
+  "source-sha256.json": "5578bae536dad59fc8c5cf53c054d335b5728e62b944858628fa221588fde2a9",
+  "bootloader\\bootloader.bin": "144dcca5fd593e0a729f1966fb9cc578809d858d2cac01e144024fb1b6de7d2f",
+  "partition_table\\partition-table.bin": "5e71c3c890e04714daa03b21a0d23953a2dadf9fdf15eec02b886f7b6e9f8c81"
+}
