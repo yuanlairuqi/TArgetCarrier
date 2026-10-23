@@ -1,0 +1,7 @@
+{
+  "name": "ESP32-S3-GEEK_无线遥控总机",
+  "build_id": "ESP32-S3-GEEK_wireless_master",
+  "target": "esp32s3",
+  "transport": "USB GU/1 + encrypted unicast WN/1",
+  "hardware_validation": false
+}

@@ -3,6 +3,8 @@
 #include "robot_wire.h"
 enum { PEER_OK, PEER_BAD_COMMAND, PEER_TIMEOUT, PEER_NOT_READY, PEER_DRIVER_ERROR };
 typedef struct {
+    bool (*profile)(void *ctx,uint8_t op,uint8_t speed,uint8_t mode,uint32_t forward,uint32_t reverse,uint16_t accel,uint16_t decel);
+    void (*profile_status)(void *ctx,uint8_t *direction,uint8_t *phase,uint16_t *hz,uint16_t *target,bool *active);
     void *ctx;
     bool (*ready)(void *ctx);
     bool (*apply)(void *ctx,uint8_t motion,uint8_t speed);
@@ -14,6 +16,7 @@ typedef struct {
 } peer_hooks_t;
 typedef struct {
     peer_hooks_t hooks;
+    bool extended;
     bool hardware, has_session, has_token, applied;
     uint32_t session, token, phone_seq, lease_at;
     uint16_t lease_ms;

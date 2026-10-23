@@ -172,6 +172,7 @@ static void telemetry_task(void *arg) {
             now_radio_send(response);
         }
         // Ping/retry cannot renew a motion lease.
+        bridge_profile(&bridge,robot.protocol,robot.accel,robot.decel);
         bridge_parameters(&bridge,robot.mode,robot.forward_ms,robot.reverse_ms);
         bridge_request(&bridge,robot.revision,robot.motion,robot.speed,robot.ack,now);
         transmit=bridge_tick(&bridge,now,&outgoing);
@@ -179,11 +180,11 @@ static void telemetry_task(void *arg) {
         robot.link_error=robot.uart_configured?(uart_available?bridge.error:ROBOT_UART_TX_ERROR):ROBOT_OK;
         robot_tick(&robot,now);
         // A timeout-generated stop supersedes any movement selected earlier in this tick.
-        if(robot.motion==ROBOT_STOP&&transmit&&outgoing.type==WIRE_COMMAND&&outgoing.payload[0]!=0){
+        if(robot.motion==ROBOT_STOP&&transmit&&(outgoing.type==WIRE_COMMAND||outgoing.type==WIRE_PROFILE)&&outgoing.payload[0]!=0){
             bridge_request(&bridge,robot.revision,0,0,robot.ack,now);transmit=bridge_tick(&bridge,now,&outgoing);
         }
         robot_status(&robot, now, data); conn=connection; notify=subscribed; pulse_notify=pulse_subscribed;
-        oled_status_t display={.uptime=now/1000U,.motion=robot.motion,.speed=robot.speed,
+        oled_status_t display={.current_hz=robot.current_hz,.target_hz=robot.target_hz,.stage=robot.stm_phase,.uptime=now/1000U,.motion=robot.motion,.speed=robot.speed,
             .error=robot.error?robot.error:robot.link_error,.ble=robot.connected,
             .stm_online=robot.stm_online,.stm_motion=robot.stm_motion,.stm_error=robot.stm_error,
             .confirmed=bridge.confirmed && !bridge.waiting && bridge.revision==robot.revision &&

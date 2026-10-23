@@ -16,6 +16,14 @@ static uint8_t tx_pending, tx_inflight;
 static uint8_t latest_status[WIRE_SIZE], tx_bytes[WIRE_SIZE];
 volatile RobotUARTStatus g_robot_uart_status;
 
+
+static bool Profile(void *ctx,uint8_t op,uint8_t speed,uint8_t mode,uint32_t forward,uint32_t reverse,uint16_t accel,uint16_t decel){
+ (void)ctx;return Motor_ProfileCommand(op,speed,mode,forward,reverse,accel,decel);
+}
+static void ProfileStatus(void *ctx,uint8_t *direction,uint8_t *phase,uint16_t *hz,uint16_t *target,bool *active){
+ (void)ctx;MotorProfileStatus s;Motor_ProfileStatus(&s);
+ *direction=s.direction;*phase=s.phase;*hz=s.hz;*target=s.target_hz;*active=s.active;
+}
 static bool Ready(void *ctx)
 {
   (void)ctx;
@@ -81,7 +89,7 @@ void RobotUART_Init(UART_HandleTypeDef *uart)
   if (link_uart != NULL) { return; } /* initialization is once per reset */
   if (uart == NULL || uart->Instance != BOARD_ROBOT_UART_INSTANCE) { return; }
   link_uart = uart;
-  peer_hooks_t hooks = {.ctx = NULL, .ready = Ready, .apply = Apply,
+  peer_hooks_t hooks = {.profile=Profile,.profile_status=ProfileStatus,.ctx = NULL, .ready = Ready, .apply = Apply,
                         .stop = Stop, .battery = NULL,
                         .stopped = Stopped, .local_busy = LocalBusy, .active = Active};
   peer_init(&peer, true, &hooks); /* Hardware adapter, never report DEMO. */

@@ -64,9 +64,9 @@ def main():
 
     for enabled in (0, 1):
         test(f'continuous_{enabled}', build(f'continuous_{enabled}',
-             [stm/'tests/test_continuous.c', stm/'App/Motion/motor_motion.c'],
+             [stm/'tests/test_continuous.c', stm/'App/Motion/motor_motion.c',stm/'App/Motion/motion_profile.c'],
              ['MOTOR_HOST_TEST', f'MOTOR_CONTINUOUS_ENABLED={enabled}']))
-    sources = [stm/x for x in ('tests/test_robot_uart.c', 'App/Motion/motor_motion.c',
+    sources = [stm/x for x in ('tests/test_robot_uart.c', 'App/Motion/motor_motion.c', 'App/Motion/motion_profile.c',
                'App/Link/robot_uart.c', 'App/Link/robot_wire.c', 'App/Link/robot_peer.c')]+[esp/'main/robot_bridge.c']
     uart = build('uart_disabled', sources, ['MOTOR_HOST_TEST', 'ROBOT_UART_HOST_TEST', 'MOTOR_CONTINUOUS_ENABLED=0'])
     for case in ('standalone', 'waiting-stop', 'running-stop', 'finished-batch-stop', 'rx-overflow',

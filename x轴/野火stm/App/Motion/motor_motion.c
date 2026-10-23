@@ -2,6 +2,11 @@
 #include "motor_assert.h"
 #include "motor_config.h"
 #include "motor_math.h"
+#include "motion_profile.h"
+static motion_profile_t profile;
+static uint32_t applied_hz;
+static uint8_t applied_direction;
+static void ProfileProcess(void);
 
 volatile MotorStatus g_motor_status = {MOTOR_NOT_STARTED, 0U, 0U, 0U, 1U};
 static TIM_TypeDef *motor_timer;
@@ -102,6 +107,7 @@ void Motor_StartOnce(TIM_HandleTypeDef *timer)
 
 void Motor_Process(void)
 {
+  if(profile.enabled){ProfileProcess();return;}
   if (g_motor_status.state == MOTOR_CONTINUOUS_HOLD) {
     if ((uint32_t)(HAL_GetTick() - wait_started) >= MOTOR_DIRECTION_HOLD_MS) {
       uint8_t level = continuous_direction == 1U ? MOTOR_DIRECTION_LEVEL :
@@ -162,6 +168,7 @@ void Motor_Process(void)
 
 void Motor_Stop(void)
 {
+  mp_abort(&profile);applied_hz=0;
   if (motor_timer == NULL || g_motor_status.state == MOTOR_NOT_STARTED) {
     return; /* UART initialization precedes the original startup request. */
   }
@@ -220,6 +227,7 @@ bool Motor_OutputActive(void)
 
 bool Motor_SetContinuous(uint8_t direction, uint8_t speed_percent)
 {
+  if(profile.enabled){Motor_Stop();}
   if (direction > 2U || speed_percent > 100U) { return false; }
   if (direction == 0U || speed_percent == 0U) {
     Motor_Stop();
@@ -266,4 +274,58 @@ bool Motor_OutputStopped(void)
        (motor_timer->CCMR1 & TIM_CCMR1_OC1M) == (4U << TIM_CCMR1_OC1M_Pos) ||
        ((motor_timer->CCMR1 & TIM_CCMR1_OC1M) == TIM_OCMODE_PWM2 &&
         motor_timer->CNT < motor_timer->CCR1));
+}
+
+
+#ifndef MOTOR_RAMP_FIRST_HZ
+#define MOTOR_RAMP_FIRST_HZ 20U /* 1 MHz / 16-bit ARR supports >=15.26 Hz. */
+#endif
+MOTOR_STATIC_ASSERT(MOTOR_RAMP_FIRST_HZ >= 16U && MOTOR_RAMP_FIRST_HZ <= MOTOR_CONTINUOUS_MIN_HZ,"Set a representable ramp floor below the minimum target");
+static void ProfileDisable(void){
+ motor_timer->CR1&=~TIM_CR1_CEN;
+ motor_timer->CCMR1=(motor_timer->CCMR1&~TIM_CCMR1_OC1M)|(4U<<TIM_CCMR1_OC1M_Pos);
+ motor_timer->CNT=0;applied_hz=0;
+}
+static void ProfileProcess(void){
+ if(applied_hz && !Motor_OutputActive()){Motor_Stop();g_motor_status.state=MOTOR_FAULT;return;}
+ mp_tick(&profile,HAL_GetTick());
+ uint32_t hz=(uint32_t)(profile.milli_hz/1000U);
+ bool run=(profile.phase==MP_ACCEL || profile.phase==MP_CRUISE || profile.phase==MP_DECEL) && hz>=MOTOR_RAMP_FIRST_HZ;
+ if(!run){ProfileDisable();
+   if(profile.phase==MP_DIR_SETUP){
+     uint8_t level=profile.direction==1?MOTOR_DIRECTION_LEVEL:(uint8_t)!MOTOR_DIRECTION_LEVEL;
+     HAL_GPIO_WritePin(MOTOR_DIR_GPIO_Port,MOTOR_DIR_Pin,level?GPIO_PIN_SET:GPIO_PIN_RESET);
+     applied_direction=profile.direction;
+   }
+   g_motor_status.state=profile.phase==MP_IDLE?MOTOR_ABORTED:
+       profile.phase==MP_DIR_HOLD?MOTOR_CONTINUOUS_HOLD:MOTOR_CONTINUOUS_WAITING;
+   return;
+ }
+ uint32_t clock=MOTOR_TIMER_INPUT_HZ/(MOTOR_TIMER_PRESCALER+1U);
+ uint32_t period=(clock+hz/2U)/hz;
+ if(period<2U || period>65536U){Motor_Stop();g_motor_status.state=MOTOR_FAULT;return;}
+ if(!applied_hz){
+   motor_timer->CR1&=~(TIM_CR1_CEN|TIM_CR1_OPM|TIM_CR1_UDIS|TIM_CR1_DIR|TIM_CR1_CMS);
+   motor_timer->CR1|=TIM_CR1_ARPE;
+   motor_timer->CCMR1=(motor_timer->CCMR1&~TIM_CCMR1_OC1M)|TIM_OCMODE_PWM2|TIM_CCMR1_OC1PE;
+   motor_timer->PSC=MOTOR_TIMER_PRESCALER;motor_timer->ARR=period-1;motor_timer->CCR1=period/2;
+   motor_timer->RCR=0;motor_timer->CNT=0;motor_timer->EGR=TIM_EGR_UG;motor_timer->SR=0;
+   motor_timer->CCER|=TIM_CCER_CC1E;motor_timer->BDTR|=TIM_BDTR_MOE;motor_timer->CR1|=TIM_CR1_CEN;
+ }else if(hz!=applied_hz){
+   motor_timer->CR1|=TIM_CR1_UDIS;motor_timer->ARR=period-1;motor_timer->CCR1=period/2;motor_timer->CR1&=~TIM_CR1_UDIS;
+ }
+ applied_hz=hz;g_motor_status.state=MOTOR_CONTINUOUS_RUNNING;
+}
+bool Motor_ProfileCommand(uint8_t op,uint8_t speed,uint8_t mode,uint32_t forward,uint32_t reverse,uint16_t accel,uint16_t decel){
+ if(op==0){Motor_Stop();return Motor_OutputStopped();}
+ if(!Motor_ContinuousReady() || op>3 || speed>100 || ((op==1||op==2)&&!speed))return false;
+ uint16_t hz=op==3?0:(uint16_t)(MOTOR_CONTINUOUS_MIN_HZ+
+   ((MOTOR_CONTINUOUS_MAX_HZ-MOTOR_CONTINUOUS_MIN_HZ)*(speed-1U)+49U)/99U);
+ if(!profile.enabled){Motor_Stop();applied_direction=0;}
+ return mp_command(&profile,op,hz,mode,forward,reverse,accel,decel,HAL_GetTick());
+}
+void Motor_ProfileStatus(MotorProfileStatus *out){
+ out->hz=(uint16_t)applied_hz;out->target_hz=profile.soft_stop?0:profile.target_hz;
+ out->direction=applied_hz?applied_direction:0;out->phase=profile.phase;
+ out->requested=profile.requested;out->active=profile.enabled && profile.phase!=MP_IDLE;
 }

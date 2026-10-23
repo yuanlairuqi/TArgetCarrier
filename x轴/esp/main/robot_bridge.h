@@ -7,6 +7,8 @@
 #define BRIDGE_PING_MS 200
 enum { BRIDGE_OK=0, BRIDGE_OFFLINE=6, BRIDGE_REJECTED=7, BRIDGE_TX_ERROR=8, BRIDGE_ACK_TIMEOUT=9 };
 typedef struct {
+    uint8_t protocol,peer_requested;
+    uint16_t accel,decel,current_hz,target_hz;
     bool enabled, online, waiting, queued, sent, confirmed;
     uint32_t session, next_token, revision, sent_at, last_tx, last_rx;
     uint32_t completed_token, completed_phone, ack;
@@ -15,6 +17,7 @@ typedef struct {
     uint16_t battery_mv;
     wire_frame_t inflight;
 } robot_bridge_t;
+void bridge_profile(robot_bridge_t *b,uint8_t protocol,uint16_t accel,uint16_t decel);
 void bridge_parameters(robot_bridge_t *b,uint8_t mode,uint32_t forward_ms,uint32_t reverse_ms);
 void bridge_init(robot_bridge_t *b,bool enabled,uint32_t session);
 void bridge_request(robot_bridge_t *b,uint32_t revision,uint8_t motion,uint8_t speed,uint32_t phone_seq,uint32_t now);
