@@ -46,6 +46,7 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     App/Motion/motor_motion.c
+    App/Motion/motion_profile.c
     App/Link/robot_uart.c
     App/Link/robot_wire.c
     App/Link/robot_peer.c

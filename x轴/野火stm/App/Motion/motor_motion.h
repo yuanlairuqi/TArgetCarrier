@@ -41,6 +41,11 @@ bool Motor_LocalBusy(void);
 bool Motor_HasFault(void);
 bool Motor_ContinuousReady(void);
 bool Motor_OutputActive(void); /* continuous timer generation enabled */
+
 bool Motor_SetContinuous(uint8_t direction, uint8_t speed_percent);
+typedef struct {uint16_t hz,target_hz;uint8_t direction,phase,requested;bool active;} MotorProfileStatus;
+bool Motor_ProfileCommand(uint8_t op,uint8_t speed,uint8_t mode,uint32_t forward,uint32_t reverse,uint16_t accel,uint16_t decel);
+void Motor_ProfileStatus(MotorProfileStatus *out);
+
 
 #endif

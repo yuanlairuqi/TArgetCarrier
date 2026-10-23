@@ -1,0 +1,170 @@
+[
+  {
+    "role": "geek",
+    "path": "README.md",
+    "before": "0755cdcbe7a8788951f9bd3139ff1170fdbb832c1fa5d23eb16880a64e37ea29",
+    "after": "5145c0e7b5b25c277811c2028a7c982ec9affabd2d16104cce94d3654463fd1c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\ESP32-S3-GEEK\\README.md"
+  },
+  {
+    "role": "geek",
+    "path": "sdkconfig.defaults",
+    "before": "0737ffa78867261200166f9e824edbe6f5ff54a3f26550b2458ef706fd25a67a",
+    "after": "76c64c32d864dad4735758e2337cce4118e125b0fdded9508d55fcefee6d644a",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\ESP32-S3-GEEK\\sdkconfig.defaults"
+  },
+  {
+    "role": "geek",
+    "path": "通信协议.md",
+    "before": "af12f5cabe24e6595d33e002463620675fe55e2898f3f0a84a495dd0dcfcf459",
+    "after": "bba06995bef757fb0f367a17c7e5d9a3fa47ab4767c009419969adcff298984d",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\ESP32-S3-GEEK\\通信协议.md"
+  },
+  {
+    "role": "geek",
+    "path": "main/CMakeLists.txt",
+    "before": "963acdad63fddd81d91ee60d6531e1ad2bd22674cb5520c07194513627d0be17",
+    "after": "820c19b70c81103f12bc0811e4ceaac850e790335c8e9cf9b4efd57a84792711",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\ESP32-S3-GEEK\\main\\CMakeLists.txt"
+  },
+  {
+    "role": "geek",
+    "path": "main/main.c",
+    "before": "49c6364cab988575bdaf36adcb0050202808e6efd0b526efe2cdc55e5b327fd1",
+    "after": "a467f63760c495b11d224304259e8f2f0a6461b54bb2102067d1ceaff635251e",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\ESP32-S3-GEEK\\main\\main.c"
+  },
+  {
+    "role": "geek",
+    "path": "main/master_guard.c",
+    "before": null,
+    "after": "4ed6a3bfee43f5d7a5dc1f58aaba5f20b6382786df465fa7e7f3d9ef321fb179",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\ESP32-S3-GEEK\\main\\master_guard.c"
+  },
+  {
+    "role": "geek",
+    "path": "main/master_guard.h",
+    "before": null,
+    "after": "47f58559849d1e1b872d7a90b79f14d204ea2ff31b4a1eb730ea8f3d417d2bb5",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\ESP32-S3-GEEK\\main\\master_guard.h"
+  },
+  {
+    "role": "geek",
+    "path": "main/now_radio.c",
+    "before": "786c92546dc3f79ef2a5c41ed7643acbe5251157571243d3f2856fdda9426030",
+    "after": "c3dc7aac923fc63671f5121ced0f0c8e0aeddacd387430589f2eb652734556be",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\ESP32-S3-GEEK\\main\\now_radio.c"
+  },
+  {
+    "role": "geek",
+    "path": "main/now_radio.h",
+    "before": "24b45efb4505ea96cc347e6b62b5f68d8bcda54a03a0cd0fc740460117f48117",
+    "after": "cb573419ca8f0f7f36379ac20db22383fc9cd9ef06b860d7810e4356a47fd174",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\ESP32-S3-GEEK\\main\\now_radio.h"
+  },
+  {
+    "role": "geek",
+    "path": "tests/test_link_stability.py",
+    "before": null,
+    "after": "f815d429efaa85c5a0e2d7758f86c81e5d3efb9e39d76f8da0e9489cc0b9c3e8",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\ESP32-S3-GEEK\\tests\\test_link_stability.py"
+  },
+  {
+    "role": "slave",
+    "path": "main/main.c",
+    "before": "fc2bdec59b8b97229346c6b47dab2fb3b58a1fdf36b2911c461b6299db801016",
+    "after": "fcdc0d5c9ce8b921d24401470579d5f86ca329fda28fda4a3c3328be37b67a54",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\main\\main.c"
+  },
+  {
+    "role": "slave",
+    "path": "main/now_protocol.c",
+    "before": "555dae97fb9491998947c2d759538bfe6825be02715ae33706edd8803ef1959b",
+    "after": "edea003ffdec42c4b83638cdd1355ba2bf0a489c50571ed17688d561bb5a5863",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\main\\now_protocol.c"
+  },
+  {
+    "role": "slave",
+    "path": "main/now_protocol.h",
+    "before": "0403baa8bc609a72901efb51dbc49cb4a0547f10b5566e92c1425dfca3cbe90e",
+    "after": "1eb0f1dafff1d1ae147a9c90fe13dd893c3fc1d384c21249fa4f7a514457fc16",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\main\\now_protocol.h"
+  },
+  {
+    "role": "slave",
+    "path": "main/now_radio.c",
+    "before": "786c92546dc3f79ef2a5c41ed7643acbe5251157571243d3f2856fdda9426030",
+    "after": "c3dc7aac923fc63671f5121ced0f0c8e0aeddacd387430589f2eb652734556be",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\main\\now_radio.c"
+  },
+  {
+    "role": "slave",
+    "path": "main/now_radio.h",
+    "before": "24b45efb4505ea96cc347e6b62b5f68d8bcda54a03a0cd0fc740460117f48117",
+    "after": "cb573419ca8f0f7f36379ac20db22383fc9cd9ef06b860d7810e4356a47fd174",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\main\\now_radio.h"
+  },
+  {
+    "role": "slave",
+    "path": "main/uart_link.c",
+    "before": "bc8d9d5b9b06c57c7afac2cbb74e232a1b34a76f2b823065017dbf43c34f9973",
+    "after": "8f070d03d6d935726443c7a079bf0643c6a3e5658ca11654d75aa4c33908972b",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\main\\uart_link.c"
+  },
+  {
+    "role": "pc",
+    "path": "controller.py",
+    "before": "8d673fcc36580194ae03c86d2a29487c7f8ab5575e30af015dc4a43ebc59c34a",
+    "after": "99617323c4adee039345c1b0271db6334d0017089caf216586c4bdfed7f3f669",
+    "destination": "D:\\TargetCarrier-PC-Vue-USB_20261022\\source\\controller.py"
+  },
+  {
+    "role": "pc",
+    "path": "desktop.py",
+    "before": "2137efc8cd2bec1c331f7a2c1ecf45d05343e3853098e6341e823e4238aadcba",
+    "after": "ec52386eea2ed89f6e416d5b29d9a80344b4e8362f115d66a2a0856bf965d048",
+    "destination": "D:\\TargetCarrier-PC-Vue-USB_20261022\\source\\desktop.py"
+  },
+  {
+    "role": "pc",
+    "path": "protocol.py",
+    "before": "9bc85b2a0f52f2266f0ca7fe9821138464a9be86c546391370dc7f6738fe931b",
+    "after": "c0cb043886563a8a07d3a41e015fb0e6261889e4023ccc528ce78829c9dd5a59",
+    "destination": "D:\\TargetCarrier-PC-Vue-USB_20261022\\source\\protocol.py"
+  },
+  {
+    "role": "pc",
+    "path": "usb_transport.py",
+    "before": "64c2537086f122e0adef5945373f15b2668d21adf931edc30e9df6da4b17364c",
+    "after": "005ebe3e4fc797992260540fdc1b29005c1415dd50508e0e16915cf7285aa1ec",
+    "destination": "D:\\TargetCarrier-PC-Vue-USB_20261022\\source\\usb_transport.py"
+  },
+  {
+    "role": "pc",
+    "path": "tests/test_desktop.py",
+    "before": "8a6c6c157a7e495f1521fb378d0103b1efd2beb1f78445f1941123686f249e5f",
+    "after": "f6a9b169f11fda0e3644f642e8e0d3c34d58674ecbdca95481d5463d1d8d56b3",
+    "destination": "D:\\TargetCarrier-PC-Vue-USB_20261022\\source\\tests\\test_desktop.py"
+  },
+  {
+    "role": "pc",
+    "path": "tests/test_link_stability.py",
+    "before": null,
+    "after": "29444b2228e0e91fbf8af88010ca09391917bea5d8a7669ec6ee5fab67098b89",
+    "destination": "D:\\TargetCarrier-PC-Vue-USB_20261022\\source\\tests\\test_link_stability.py"
+  },
+  {
+    "role": "pc",
+    "path": "web/app.js",
+    "before": "53fa270f70a55fad6fef2ce7881475e4ae953108dcae6d58eaa4867fe8b12c5c",
+    "after": "a4412347cc6a9c3105a4ec5c985850bb3150976095cb109719e3342b0e21ecb9",
+    "destination": "D:\\TargetCarrier-PC-Vue-USB_20261022\\source\\web\\app.js"
+  },
+  {
+    "role": "docs",
+    "path": "通信稳定性修复说明.md",
+    "before": null,
+    "after": "f9b2e56c5775dd475da3f8cabe0b7fd94718adff3bb3dafb94e967bf0d51402a",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\通信稳定性修复说明.md"
+  }
+]

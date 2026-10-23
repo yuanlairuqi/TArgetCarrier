@@ -10,7 +10,8 @@ enum { ROBOT_STOP, ROBOT_FORWARD, ROBOT_BACKWARD };
 enum { ROBOT_OK, ROBOT_BAD_COMMAND, ROBOT_TIMEOUT, ROBOT_DISCONNECTED, ROBOT_ADC_ERROR,
     ROBOT_UART_UNCONFIGURED, ROBOT_STM_OFFLINE, ROBOT_STM_REJECTED, ROBOT_UART_TX_ERROR, ROBOT_STM_ACK_TIMEOUT };
 typedef struct {
-    uint8_t motion, speed, error, mode;
+    uint8_t motion, speed, error, mode, protocol;
+    uint16_t accel,decel,current_hz,target_hz;
     uint32_t forward_ms, reverse_ms;
     uint32_t ack, rx_count, last_motion_ms;
     bool has_seq, connected, battery_valid;

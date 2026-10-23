@@ -14,7 +14,7 @@ void wire_encode(const wire_frame_t *f,uint8_t out[WIRE_SIZE]) {
     uint16_t crc=wire_crc(out,30);out[30]=(uint8_t)crc;out[31]=(uint8_t)(crc>>8);
 }
 bool wire_decode(const uint8_t b[WIRE_SIZE],wire_frame_t *f) {
-    if(b[0]!=0xa5||b[1]!=0x5a||b[2]!=2||b[3]<1||b[3]>3||
+    if(b[0]!=0xa5||b[1]!=0x5a||b[2]!=2||b[3]<1||b[3]>4||
        wire_crc(b,30)!=((uint16_t)b[30]|(uint16_t)b[31]<<8))return false;
     f->type=b[3];f->session=wire_u32(b+4);f->token=wire_u32(b+8);memcpy(f->payload,b+12,18);return true;
 }

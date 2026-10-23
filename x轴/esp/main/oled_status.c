@@ -92,6 +92,8 @@ static void display_task(void *arg)
             snprintf(lines[2],22,"SRC %s",s.source==1?"BLE":s.source==2?"ESP-NOW":"NONE");
             snprintf(lines[3],22,"CMD %s S%u",motion_name(s.motion),s.speed);
             snprintf(lines[4],22,"ACK %s",!s.stm_online?"OFFLINE":s.confirmed?motion_name(s.stm_motion):"WAIT");
+            const char *stages[]={"IDLE","ACCEL","CRUISE","DECEL","DIR HOLD","DIR SETUP","FAULT"};
+            if(s.stm_online && s.stage<=6)snprintf(lines[4],22,"%s %u/%uHZ",stages[s.stage],s.current_hz,s.target_hz);
             if(!s.capture_available) snprintf(lines[5],22,"PUL CAPTURE OFF");
             else if(!s.pulse_recent) snprintf(lines[5],22,"PUL NO RECENT EDGES");
             else snprintf(lines[5],22,"PUL %lu HZ D%u",(unsigned long)s.pulse_hz,s.direction);

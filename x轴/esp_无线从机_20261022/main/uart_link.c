@@ -27,6 +27,8 @@ bool uart_link_init(void) {
 int uart_link_read(uint8_t *data,size_t n) {return available?uart_read_bytes(CONFIG_ROBOT_UART_PORT,data,n,0):0;}
 bool uart_link_send(const wire_frame_t *frame) {
     if(!available)return false;
+    size_t free_bytes=0;
+    if(uart_get_tx_buffer_free_size(CONFIG_ROBOT_UART_PORT,&free_bytes)!=ESP_OK || free_bytes<WIRE_SIZE)return false;
     uint8_t bytes[WIRE_SIZE];wire_encode(frame,bytes);
     return uart_write_bytes(CONFIG_ROBOT_UART_PORT,bytes,sizeof(bytes))==sizeof(bytes);
 }

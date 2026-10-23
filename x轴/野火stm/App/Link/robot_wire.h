@@ -4,8 +4,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #define WIRE_SIZE 32
-enum { WIRE_COMMAND=1, WIRE_STATUS=2, WIRE_PING=3 };
-enum { PEER_READY=1, PEER_DEMO=2, PEER_BATTERY=4, PEER_APPLIED=8, PEER_LOCAL_BUSY=16 };
+enum { WIRE_COMMAND=1, WIRE_STATUS=2, WIRE_PING=3, WIRE_PROFILE=4 };
+enum { PEER_READY=1, PEER_DEMO=2, PEER_BATTERY=4, PEER_APPLIED=8, PEER_LOCAL_BUSY=16, PEER_PROFILE=32 };
 typedef struct { uint8_t type; uint32_t session, token; uint8_t payload[18]; } wire_frame_t;
 typedef struct { uint8_t bytes[WIRE_SIZE]; size_t used; } wire_parser_t;
 uint16_t wire_crc(const uint8_t *p, size_t n);

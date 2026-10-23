@@ -11,7 +11,8 @@
 typedef struct {
     uint32_t uptime, rx, rx_errors, tx_errors, hz;
     MotorState state;
-    uint8_t linked, direction, output, fault;
+    uint8_t linked, direction, output, fault,phase;
+    uint16_t target_hz;
 } display_state_t;
 static display_state_t latest;
 static StaticTask_t display_tcb;
@@ -25,7 +26,7 @@ void StatusDisplay_Publish(void)
     s.uptime=HAL_GetTick()/1000U;s.state=g_motor_status.state;
     s.linked=g_robot_uart_status.linked;s.rx=g_robot_uart_status.frames_received;
     s.rx_errors=g_robot_uart_status.rx_faults;s.tx_errors=g_robot_uart_status.tx_faults;
-    s.fault=Motor_HasFault();
+    s.fault=Motor_HasFault();MotorProfileStatus profile;Motor_ProfileStatus(&profile);s.phase=profile.phase;s.target_hz=profile.target_hz;
     s.direction=(MOTOR_DIR_GPIO_Port->ODR&MOTOR_DIR_Pin)?1U:0U;
     s.output=(s.state==MOTOR_RUNNING || Motor_OutputActive()) && (TIM1->CR1&TIM_CR1_CEN);
     if (s.output) s.hz=MOTOR_TIMER_INPUT_HZ/(TIM1->PSC+1U)/(TIM1->ARR+1U);
@@ -117,7 +118,9 @@ static void DisplayTask(void *argument)
             snprintf(lines[0],22,"STM32 X AXIS");
             snprintf(lines[1],22,"UART %s RX %lu",s.linked?"ON":"OFF",(unsigned long)s.rx);
             snprintf(lines[2],22,"STATE %s",state_name(s.state));
-            snprintf(lines[3],22,"SET HZ %lu",(unsigned long)s.hz);
+            snprintf(lines[3],22,"HZ %lu T%u",(unsigned long)s.hz,s.target_hz);
+            const char *phases[]={"IDLE","ACCEL","CRUISE","DECEL","DIR HOLD","DIR SETUP","FAULT"};
+            if(s.phase && s.phase<=6)snprintf(lines[2],22,"PHASE %s",phases[s.phase]);
             snprintf(lines[4],22,"DIR %u OUT %s",s.direction,s.output?"ON":"OFF");
             snprintf(lines[5],22,"ERR M%u R%lu T%lu",s.fault,(unsigned long)s.rx_errors,(unsigned long)s.tx_errors);
             snprintf(lines[6],22,"UP %lu S",(unsigned long)s.uptime);

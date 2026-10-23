@@ -7,7 +7,20 @@ static void make_command(robot_bridge_t *b,uint32_t now) {
     b->inflight.payload[2]=0xf4;b->inflight.payload[3]=1; // STM32 lease = 500 ms
     wire_put32(b->inflight.payload+4,b->desired_phone);
     b->inflight.payload[8]=b->desired_mode;wire_put32(b->inflight.payload+10,b->forward_ms);wire_put32(b->inflight.payload+14,b->reverse_ms);
+
+    if(b->protocol==4){
+        b->inflight.type=WIRE_PROFILE;b->inflight.payload[9]=4;
+        uint16_t f=(uint16_t)(b->forward_ms/100U),r=(uint16_t)(b->reverse_ms/100U);
+        b->inflight.payload[10]=(uint8_t)f;b->inflight.payload[11]=(uint8_t)(f>>8);
+        b->inflight.payload[12]=(uint8_t)r;b->inflight.payload[13]=(uint8_t)(r>>8);
+        b->inflight.payload[14]=(uint8_t)b->accel;b->inflight.payload[15]=(uint8_t)(b->accel>>8);
+        b->inflight.payload[16]=(uint8_t)b->decel;b->inflight.payload[17]=(uint8_t)(b->decel>>8);
+    }
     b->waiting=true;b->sent=false;b->sent_at=now;b->queued=false;
+}
+
+void bridge_profile(robot_bridge_t *b,uint8_t protocol,uint16_t accel,uint16_t decel){
+ b->protocol=protocol;b->accel=accel;b->decel=decel;
 }
 void bridge_parameters(robot_bridge_t *b,uint8_t mode,uint32_t forward_ms,uint32_t reverse_ms) {
     b->desired_mode=mode;b->forward_ms=forward_ms;b->reverse_ms=reverse_ms;
@@ -19,7 +32,7 @@ void bridge_init(robot_bridge_t *b,bool enabled,uint32_t session) {
 void bridge_request(robot_bridge_t *b,uint32_t rev,uint8_t op,uint8_t speed,uint32_t phone,uint32_t now) {
     if(!b->enabled||rev==b->revision)return;
     b->revision=rev;b->desired_motion=op;b->desired_speed=speed;b->desired_phone=phone;
-    if(op==0||!b->waiting)make_command(b,now);else b->queued=true;
+    if(op==0||op==3||!b->waiting)make_command(b,now);else b->queued=true;
 }
 bool bridge_tick(robot_bridge_t *b,uint32_t now,wire_frame_t *out) {
     if(!b->enabled)return false;
@@ -45,18 +58,25 @@ bool bridge_tick(robot_bridge_t *b,uint32_t now,wire_frame_t *out) {
 }
 bool bridge_receive(robot_bridge_t *b,const wire_frame_t *f,uint32_t now) {
     if(!b->enabled||f->type!=WIRE_STATUS||f->session!=b->session||f->payload[0]>2||f->payload[1]>100||
-        (f->payload[2]&~31)||f->payload[3]>4||f->payload[10]>1||f->payload[11]>2)return false;
+        (f->payload[2]&~63)||f->payload[3]>4||f->payload[10]>1||f->payload[11]>((f->payload[2]&PEER_PROFILE)?6:2))return false;
     uint32_t phone=wire_u32(f->payload+6);
     bool current=b->waiting&&f->token==b->inflight.token&&phone==wire_u32(b->inflight.payload+4);
     bool prior=b->confirmed&&f->token==b->completed_token&&phone==b->completed_phone;
     if(!current&&!prior)return false;
-    if(current&&f->payload[3]==0&&
+    bool extended=(f->payload[2]&PEER_PROFILE)!=0;
+    if(current&&f->payload[3]==0&&b->inflight.type==WIRE_PROFILE && (!extended || f->payload[12]!=b->inflight.payload[0] || f->payload[1]!=b->inflight.payload[1] || f->payload[10]!=b->inflight.payload[8]))return false;
+    if(current&&!extended&&f->payload[3]==0&&
        ((b->inflight.payload[0]==0?f->payload[0]!=0:
           b->inflight.payload[8]==0?f->payload[0]!=b->inflight.payload[0]:f->payload[0]==0)||
         f->payload[1]!=b->inflight.payload[1]||f->payload[10]!=b->inflight.payload[8]))return false;
     // Ignore an older heartbeat while a newer command is awaiting confirmation.
     if(b->waiting&&!current)return false;
     if((f->payload[2]&PEER_DEMO)&&(f->payload[2]&PEER_APPLIED))return false;
+
+    if(b->protocol==4 && !extended)return false;
+    b->peer_requested=extended?f->payload[12]:f->payload[0];
+    b->current_hz=extended?((uint16_t)f->payload[4]|(uint16_t)f->payload[5]<<8):0;
+    b->target_hz=extended?((uint16_t)f->payload[13]|(uint16_t)f->payload[14]<<8):0;
     b->last_rx=now;b->online=true;b->peer_motion=f->payload[0];b->peer_speed=f->payload[1];
     b->peer_mode=f->payload[10];b->peer_phase=f->payload[11];
     b->peer_flags=f->payload[2];b->peer_error=f->payload[3];

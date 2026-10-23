@@ -19,6 +19,7 @@ uint32_t now_crc32(const uint8_t *p, size_t n);
 bool now_decode(const uint8_t *data, size_t n, now_request_t *out);
 void now_control_init(now_control_t *n, uint32_t node, uint32_t boot);
 void now_ble_connection(now_control_t *n, robot_control_t *r, bool connected);
+void now_control_link_lost(now_control_t *n,robot_control_t *r);
 void now_control_tick(now_control_t *n, robot_control_t *r, uint32_t now);
 uint8_t now_control_command(now_control_t *n, robot_control_t *r,
                           const now_request_t *q, uint32_t received, uint32_t now);

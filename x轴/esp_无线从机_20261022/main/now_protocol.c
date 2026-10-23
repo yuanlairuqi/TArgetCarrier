@@ -34,6 +34,10 @@ void now_control_init(now_control_t *n, uint32_t node, uint32_t boot) {
 void now_ble_connection(now_control_t *n, robot_control_t *r, bool connected) {
     revoke(n);n->ble_connected=connected;robot_connection(r,connected);
 }
+void now_control_link_lost(now_control_t *n,robot_control_t *r) {
+    revoke(n);
+    if(!n->ble_connected){robot_connection(r,false);robot_stop(r,ROBOT_DISCONNECTED);}
+}
 void now_control_tick(now_control_t *n, robot_control_t *r, uint32_t now) {
     if(n->active&&((uint32_t)(now-n->last_fresh_ms)>=ROBOT_TIMEOUT_MS||r->error!=ROBOT_OK)) {
         uint8_t error=r->error?r->error:ROBOT_TIMEOUT;
@@ -41,6 +45,15 @@ void now_control_tick(now_control_t *n, robot_control_t *r, uint32_t now) {
     }
 }
 static bool command_valid(const uint8_t *d, uint32_t seq) {
+
+    if(d[0]==4){
+        uint32_t f=((uint32_t)d[8]|(uint32_t)d[9]<<8)*100U,r=((uint32_t)d[10]|(uint32_t)d[11]<<8)*100U;
+        bool rates=(d[12]||d[13])&&(d[14]||d[15]);
+        return d[1]<=3 && d[2]<=100 && d[3]<=1 && rates && get32(d+4)==seq &&
+            ((d[1]==0||d[1]==3)?d[2]==0:d[2]>0) &&
+            ((d[1]!=0&&d[1]!=3)||(!d[3]&&!f&&!r)) &&
+            (!d[3]||(f>=100&&r>=100&&f<=3600000&&r<=3600000));
+    }
     return d[0]==3&&d[1]<=ROBOT_BACKWARD&&d[2]<=100&&d[3]<=1&&
         ((d[1]==ROBOT_STOP)==(d[2]==0))&&get32(d+4)==seq&&
         (d[3]==0||(get32(d+8)>=100&&get32(d+8)<=3600000&&

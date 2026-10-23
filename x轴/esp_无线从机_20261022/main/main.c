@@ -23,6 +23,7 @@
 #include "now_radio.h"
 #include "control_feedback.h"
 #include "oled_status.h"
+#include "esp_system.h"
 static now_control_t wireless;
 static bool wireless_available;
 static void put32w(uint8_t *p,uint32_t v){for(int i=0;i<4;i++)p[i]=(uint8_t)(v>>(8*i));}
@@ -151,15 +152,20 @@ static void reset_host(int reason) {
 static void host_task(void *arg) { (void)arg; nimble_port_run(); nimble_port_freertos_deinit(); }
 static void telemetry_task(void *arg) {
     (void)arg; uint32_t last_battery=0,last_notify=0;uint16_t esp_mv=0;bool esp_battery_valid=false;
-    wire_parser_t parser={0};uint32_t last_radio_status=0;
+    wire_parser_t parser={0};uint32_t last_radio_status=0,last_loop=0,max_gap=0,radio_generation=0,diag_at=0;
     for (;;) {
-        uint32_t now=now_ms(); uint16_t mv=0; bool sample=(uint32_t)(now-last_battery)>=500;
+        uint32_t now=now_ms();
+        if(last_loop && now-last_loop>max_gap)max_gap=now-last_loop;
+        last_loop=now;
+        now_radio_stats_t rs;now_radio_stats(&rs);
+        uint16_t mv=0; bool sample=(uint32_t)(now-last_battery)>=500;
         bool valid=sample ? battery_read(&mv) : false;
         uint8_t data[ROBOT_STATUS_SIZE]; uint16_t conn; bool notify,pulse_notify;
-        uint8_t incoming[96];int count=uart_link_read(incoming,sizeof(incoming));wire_frame_t frame;
+        uint8_t incoming[256];int count=uart_link_read(incoming,sizeof(incoming));wire_frame_t frame;
+        xSemaphoreTake(lock,portMAX_DELAY);
         for(int i=0;i<count;++i)if(wire_feed(&parser,incoming[i],&frame))bridge_receive(&bridge,&frame,now);
         bool transmit=false;wire_frame_t outgoing;
-        xSemaphoreTake(lock, portMAX_DELAY);
+        if(radio_generation!=rs.recoveries){radio_generation=rs.recoveries;now_control_link_lost(&wireless,&robot);}
         control_feedback(&robot,&bridge);
         robot.link_error=robot.uart_configured?(uart_available?bridge.error:ROBOT_UART_TX_ERROR):ROBOT_OK;
         robot_tick(&robot, now);
@@ -181,6 +187,7 @@ static void telemetry_task(void *arg) {
             now_radio_send(response);
         }
         // Ping/retry cannot renew a motion lease.
+        bridge_profile(&bridge,robot.protocol,robot.accel,robot.decel);
         bridge_parameters(&bridge,robot.mode,robot.forward_ms,robot.reverse_ms);
         bridge_request(&bridge,robot.revision,robot.motion,robot.speed,robot.ack,now);
         transmit=bridge_tick(&bridge,now,&outgoing);
@@ -188,18 +195,18 @@ static void telemetry_task(void *arg) {
         robot.link_error=robot.uart_configured?(uart_available?bridge.error:ROBOT_UART_TX_ERROR):ROBOT_OK;
         robot_tick(&robot,now);
         // A timeout-generated stop supersedes any movement selected earlier in this tick.
-        if(robot.motion==ROBOT_STOP&&transmit&&outgoing.type==WIRE_COMMAND&&outgoing.payload[0]!=0){
+        if(robot.motion==ROBOT_STOP&&transmit&&(outgoing.type==WIRE_COMMAND||outgoing.type==WIRE_PROFILE)&&outgoing.payload[0]!=0){
             bridge_request(&bridge,robot.revision,0,0,robot.ack,now);transmit=bridge_tick(&bridge,now,&outgoing);
         }
         robot_status(&robot, now, data); conn=connection; notify=subscribed; pulse_notify=pulse_subscribed;
-        oled_status_t display={.uptime=now/1000U,.motion=robot.motion,.speed=robot.speed,
+        oled_status_t display={.current_hz=robot.current_hz,.target_hz=robot.target_hz,.stage=robot.stm_phase,.uptime=now/1000U,.motion=robot.motion,.speed=robot.speed,
             .error=robot.error?robot.error:robot.link_error,.ble=wireless.ble_connected,
             .stm_online=robot.stm_online,.stm_motion=robot.stm_motion,.stm_error=robot.stm_error,
             .confirmed=bridge.confirmed && !bridge.waiting && bridge.revision==robot.revision &&
                 bridge.completed_phone==robot.ack && bridge.online && (robot.stm_flags&PEER_APPLIED),
             .source=wireless.ble_connected?1U:wireless.active?2U:0U};
         xSemaphoreGive(lock);
-        if(transmit&&!uart_link_send(&outgoing))bridge_tx_failed(&bridge);
+        if(transmit&&!uart_link_send(&outgoing)){xSemaphoreTake(lock,portMAX_DELAY);bridge_tx_failed(&bridge);xSemaphoreGive(lock);}
         if(notify && conn!=BLE_HS_CONN_HANDLE_NONE&&(uint32_t)(now-last_notify)>=100) {
             last_notify=now;
             struct os_mbuf *om=ble_hs_mbuf_from_flat(data, sizeof(data));
@@ -212,9 +219,17 @@ static void telemetry_task(void *arg) {
             now_control_tick(&wireless,&robot,now);
             control_feedback(&robot,&bridge);
             now_status_frame(&wireless,&robot,NULL,NOW_OK,now,response);
+            response[27]=1;response[28]=(uint8_t)esp_reset_reason();response[29]=(uint8_t)rs.rx_high;response[30]=(uint8_t)rs.tx_high;
+            response[31]=(uint8_t)rs.wave_drop;response[32]=(uint8_t)rs.rx_drop;response[33]=(uint8_t)(rs.rx_drop>>8);
+            response[34]=(uint8_t)rs.callback_timeout;response[35]=(uint8_t)(rs.callback_timeout>>8);
+            response[36]=(uint8_t)rs.recoveries;response[37]=(uint8_t)(rs.recoveries>>8);
+            response[38]=(uint8_t)max_gap;response[39]=(uint8_t)(max_gap>>8);
+            put32w(response+60,now_crc32(response,60));
             xSemaphoreGive(lock);now_radio_send(response);last_radio_status=now;
         }
+        xSemaphoreTake(lock,portMAX_DELAY);
         bool radio_capture=wireless_available&&wireless.active&&!wireless.ble_connected;
+        xSemaphoreGive(lock);
         pulse_capture_sink(radio_capture?radio_wave:NULL);
         pulse_capture_poll(radio_capture?0xfffe:conn,pulse_handle,radio_capture||pulse_notify);
         now_radio_service();
@@ -222,7 +237,9 @@ static void telemetry_task(void *arg) {
         display.capture_available=captured.available;display.pulse_recent=captured.recent;
         display.pulse_hz=captured.hz;display.direction=captured.direction;
         oled_status_publish(&display);
-        vTaskDelay(pdMS_TO_TICKS(20));
+        if(now-diag_at>=5000){diag_at=now;ESP_LOGI("link_diag","rx_drop=%lu wave_drop=%lu cb_timeout=%lu generation=%lu loop_max_ms=%lu uart_error=%u auth_fail=%lu",
+            (unsigned long)rs.rx_drop,(unsigned long)rs.wave_drop,(unsigned long)rs.callback_timeout,(unsigned long)rs.recoveries,(unsigned long)max_gap,display.error,(unsigned long)rs.auth_fail);}
+        vTaskDelay(pdMS_TO_TICKS(10)>0?pdMS_TO_TICKS(10):1);
     }
 }
 void app_main(void) {

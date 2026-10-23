@@ -20,5 +20,12 @@ bool master_output_confirmed(const uint8_t s[64],const uint8_t c[64]){
     const uint8_t *r=s+40,*cmd=c+24;
     bool hardware=(r[2]&0xb8)==0xb8&&!(r[2]&0x42)&&r[7]==0;
     if(!hardware||wire_get32(r+8)!=seq||wire_get32(r+12)!=seq||r[5]!=cmd[1]||r[6]!=cmd[2]||r[18]!=cmd[3])return false;
+
+    if(r[0]!=cmd[0])return false;
+    if(cmd[0]==4){
+        uint16_t hz=(uint16_t)r[3]|(uint16_t)r[4]<<8,target=(uint16_t)r[16]|(uint16_t)r[17]<<8;
+        if(cmd[1]==0||cmd[1]==3)return r[1]==0&&r[19]==0&&hz==0;
+        return r[19]==2&&hz>0&&hz==target;
+    }
     return cmd[3]==1||(r[1]==cmd[1]&&r[19]==cmd[1]);
 }
