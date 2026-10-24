@@ -1,0 +1,10 @@
+{
+  "exit_code": 0,
+  "command": [
+    "C:\\Espressif\\tools\\python\\v6.1\\venv\\Scripts\\python.exe",
+    "C:\\Espressif\\v6.1\\esp-idf\\tools\\idf.py",
+    "-C",
+    "C:\\Users\\y\\Documents\\ChatGPT\\tips\\lcd-fix\\build-run\\src",
+    "build"
+  ]
+}

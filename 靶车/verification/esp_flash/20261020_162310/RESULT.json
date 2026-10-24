@@ -1,0 +1,53 @@
+{
+  "port": "COM13",
+  "mac": "7c:e8:b1:e5:1d:ac",
+  "physical_flash_bytes": 8388608,
+  "configured_flash_bytes": 4194304,
+  "backup_sha256": "c84dc4b70c06c1a7c8ef5f7645faee290e51ad588b9e3e4544021b02595f34e8",
+  "regions_verified": [
+    {
+      "address": 0,
+      "file": "bootloader/bootloader.bin",
+      "bytes": 21120,
+      "sha256": "51cb42c375e883396bb7932bbeb787357570bca199b3d11936b8c6edeac9358f"
+    },
+    {
+      "address": 32768,
+      "file": "partition_table/partition-table.bin",
+      "bytes": 3072,
+      "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    },
+    {
+      "address": 65536,
+      "file": "esp32_robot.bin",
+      "bytes": 496576,
+      "sha256": "0066ac3a99f8a4a40406daf21dddf6705863240f4cd4e0c5b65830404dcc4e3b"
+    }
+  ],
+  "tool_verify_passed": true,
+  "independent_readback_passed": true,
+  "untouched_sectors_within_readback_preserved": true,
+  "readback_bytes": 565248,
+  "boot_verified": false,
+  "ble_connection_verified": true,
+  "stm_uart_hardware_verified": false,
+  "motor_tested": false,
+  "source": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp",
+  "secure_boot": false,
+  "flash_encryption": false,
+  "application_ready_log": false,
+  "uart_init_log": false,
+  "application_started_verified": true,
+  "backup": "C:\\Users\\y\\Desktop\\TargetCarrier\\_backups\\esp32_flash_20261020_162310\\flash_before_8MB.bin",
+  "flash_success": true,
+  "runtime_evidence": {
+    "application_running_verified": true,
+    "application_ready_log_captured": false,
+    "uart_init_log_captured": false,
+    "ble_subscription_activity_verified": true,
+    "gatt_notify_count": 536,
+    "client_display_or_delivery_verified": false,
+    "stm_uart_hardware_verified": false,
+    "motor_tested": false
+  }
+}

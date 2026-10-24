@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-23",
+  "branch": "feat/link-stability-20261023",
+  "prior_branch": "feat/xaxis-ramp-20261022",
+  "modified_files": 24,
+  "pc_tests": 80,
+  "native_groups": 21,
+  "disabled_radio_compiles": 2,
+  "legacy_regression_groups": 25,
+  "profile_regression_groups": 10,
+  "geek_build_exit": 0,
+  "slave_build_exit": 0,
+  "pc_package_exit": 0,
+  "ui_smoke": {
+    "title": "TargetCarrier · 电机控制台",
+    "vue": true,
+    "ready": true
+  },
+  "firmware_paired": false,
+  "flashed": false,
+  "hardware_connected": false,
+  "motor_operated": false,
+  "stm32_modified": false,
+  "unchanged_source_files": 61,
+  "protected_source_files": 677,
+  "package": "D:\\TargetCarrier-PC-Vue-USB_20261022\\通信稳定版_20261023",
+  "toolchain": "ESP-IDF 6.1 / Xtensa GCC 15.2.0 / CMake 4.0.3 / Ninja 1.12.1 / Python 3.11.15 / PyInstaller 6.22.3"
+}

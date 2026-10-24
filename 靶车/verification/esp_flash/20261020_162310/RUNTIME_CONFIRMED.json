@@ -1,0 +1,10 @@
+{
+  "application_running_verified": true,
+  "application_ready_log_captured": false,
+  "uart_init_log_captured": false,
+  "ble_subscription_activity_verified": true,
+  "gatt_notify_count": 536,
+  "client_display_or_delivery_verified": false,
+  "stm_uart_hardware_verified": false,
+  "motor_tested": false
+}

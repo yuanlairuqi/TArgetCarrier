@@ -1,0 +1,32 @@
+menu "GEEK USB to paired ESP-NOW slave"
+config ROBOT_ESPNOW_ENABLED
+    bool "Compile the encrypted unicast link"
+    default y
+    help
+        Missing real STA MAC or keys keeps wireless disabled at runtime.
+        No broadcast motion or automatic pairing is supported.
+config ROBOT_ESPNOW_NODE_ID
+    int "Selected slave node ID"
+    range 1 65535
+    default 1
+config ROBOT_ESPNOW_CHANNEL
+    int "Shared 2.4GHz channel"
+    range 1 13
+    default 1
+config ROBOT_ESPNOW_CONTROLLER_MAC
+    string "Paired SLAVE Wi-Fi STA MAC (legacy shared field name)"
+    default ""
+    depends on ROBOT_ESPNOW_ENABLED
+config ROBOT_ESPNOW_PMK
+    string "Private PMK (32 hex digits; local file only)"
+    default ""
+    depends on ROBOT_ESPNOW_ENABLED
+config ROBOT_ESPNOW_LMK
+    string "Private peer LMK (32 hex digits; local file only)"
+    default ""
+    depends on ROBOT_ESPNOW_ENABLED
+config ROBOT_ESPNOW_AUTH_KEY
+    string "Private application HMAC key (64 hex digits; local file only)"
+    default ""
+    depends on ROBOT_ESPNOW_ENABLED
+endmenu

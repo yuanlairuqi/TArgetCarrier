@@ -1,0 +1,8 @@
+{
+  "application_ready_log": false,
+  "uart_init_log": false,
+  "download_mode_seen": false,
+  "panic_seen": false,
+  "log_bytes": 0,
+  "reset": "esptool watchdog reset"
+}

@@ -1,0 +1,40 @@
+{
+  "passed_host_groups": 18,
+  "host_groups": [
+    "rtos_tasks_blink_0_delay_100",
+    "rtos_tasks_blink_1_delay_100",
+    "rtos_tasks_blink_1_delay_250",
+    "motor_ppr_7",
+    "motor_ppr_16",
+    "motor_ppr_200",
+    "motor_ppr_1600",
+    "motor_ppr_4080",
+    "motor_ppr_4096",
+    "motor_ppr_4112",
+    "motor_ppr_8176",
+    "motor_ppr_8192",
+    "motor_ppr_40000",
+    "motor_bad-mode",
+    "motor_unexpected-stop",
+    "motor_null-timer",
+    "motor_wrong-timer",
+    "motor_inverted-polarity"
+  ],
+  "debug_elf_checks": {
+    "main": {
+      "svc": "0x80059e0",
+      "pendsv": "0x8005c10",
+      "systick": "0x8003080",
+      "led_task_linked": false,
+      "dynamic_heap_linked": false
+    },
+    "copy": {
+      "svc": "0x8005a74",
+      "pendsv": "0x8005ca4",
+      "systick": "0x80030b0",
+      "led_task_linked": true,
+      "dynamic_heap_linked": false
+    }
+  },
+  "limits": "Host stubs and ELF checks do not execute the Cortex-M3 scheduler or prove physical LED/UART/motion behavior."
+}

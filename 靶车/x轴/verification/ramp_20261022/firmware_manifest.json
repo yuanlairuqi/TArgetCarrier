@@ -1,0 +1,82 @@
+[
+  {
+    "role": "stm",
+    "path": "firmware\\stm32\\stmc8t6.bin",
+    "sha256": "d7e355dcf95d166e264a70f0cd67ffcf5c6ca28542035953558dc4a962b5a88d"
+  },
+  {
+    "role": "stm",
+    "path": "firmware\\stm32\\stmc8t6.hex",
+    "sha256": "cb05b53a9b4e197d3952c048f97f082ed51b9adfa720cea248346ffe6944f6ae"
+  },
+  {
+    "role": "stm",
+    "path": "firmware\\stm32\\stmc8t6.elf",
+    "sha256": "ee54b59e47e9e78bc7d694bdee1e5e539b01e600c2ca8e8a47b6ffec1ad0dfb6"
+  },
+  {
+    "role": "stm",
+    "path": "firmware\\stm32\\stmc8t6.map",
+    "sha256": "60c7b3dfd2ee180bc2b9cd95348c2c39cb0ae722cd816f32a4f373b451ba45ae"
+  },
+  {
+    "role": "esp",
+    "path": "firmware\\esp\\esp32_robot.bin",
+    "sha256": "d3e998d939df0a4241f8ab3fd7e4ff6d895d55c6bf675922b1383ff6a062d563"
+  },
+  {
+    "role": "esp",
+    "path": "firmware\\esp\\bootloader\\bootloader.bin",
+    "sha256": "f14aead51e67d0d6c4b01ca994b5efdccf7b5f607aee11514d447c06797519e7"
+  },
+  {
+    "role": "esp",
+    "path": "firmware\\esp\\partition_table\\partition-table.bin",
+    "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  {
+    "role": "esp",
+    "path": "firmware\\esp\\flasher_args.json",
+    "sha256": "a329a31719f7e949ca93520e467eef5214bdef37f6db2173e4af070f73f0cba3"
+  },
+  {
+    "role": "slave",
+    "path": "firmware\\slave\\esp32_robot.bin",
+    "sha256": "4baecc5b905bac3e62fef5ed51c95bb7b798e3885467837df395f68add1afbab"
+  },
+  {
+    "role": "slave",
+    "path": "firmware\\slave\\bootloader\\bootloader.bin",
+    "sha256": "f14aead51e67d0d6c4b01ca994b5efdccf7b5f607aee11514d447c06797519e7"
+  },
+  {
+    "role": "slave",
+    "path": "firmware\\slave\\partition_table\\partition-table.bin",
+    "sha256": "5e71c3c890e04714daa03b21a0d23953a2dadf9fdf15eec02b886f7b6e9f8c81"
+  },
+  {
+    "role": "slave",
+    "path": "firmware\\slave\\flasher_args.json",
+    "sha256": "a329a31719f7e949ca93520e467eef5214bdef37f6db2173e4af070f73f0cba3"
+  },
+  {
+    "role": "geek",
+    "path": "firmware\\geek\\ESP32-S3-GEEK_wireless_master.bin",
+    "sha256": "c1befde0c03fb93a6a79f6323b63b85658b3782518d1b010f95b7846560a2691"
+  },
+  {
+    "role": "geek",
+    "path": "firmware\\geek\\bootloader\\bootloader.bin",
+    "sha256": "af31d1b3d23cb25c3e2f05f0158ce429f66c7f8d8186bb1c77a51950fbfb1c72"
+  },
+  {
+    "role": "geek",
+    "path": "firmware\\geek\\partition_table\\partition-table.bin",
+    "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  {
+    "role": "geek",
+    "path": "firmware\\geek\\flasher_args.json",
+    "sha256": "4c4e0169e6af3ee4d3995a770dc1de47efea4fc80036147b399906bd9c96480f"
+  }
+]

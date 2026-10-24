@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-22",
+  "branch": "feat/xaxis-ramp-20261022",
+  "prior_branch": "codex/geek-wireless-master-20261022",
+  "installed_sources": 48,
+  "unchanged_source_files_verified": 226,
+  "pc_tests": 70,
+  "legacy_regression_groups": 25,
+  "motion_regression_groups": 10,
+  "builds": [
+    "STM32 Debug",
+    "STM32 Release",
+    "ESP BLE node",
+    "ESP wireless slave",
+    "GEEK master"
+  ],
+  "ui_smoke": {
+    "title": "TargetCarrier · 电机控制台",
+    "vue": true,
+    "ready": true
+  },
+  "package": "D:\\TargetCarrier-PC-Vue-USB_20261022\\加减速版_20261022",
+  "hardware_tested": false,
+  "flashed": false,
+  "note": "靶车 untouched; existing files backed up; package copied and hashed; no device connection or system changes"
+}
