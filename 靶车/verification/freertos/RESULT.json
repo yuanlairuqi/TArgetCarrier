@@ -1,0 +1,47 @@
+{
+  "project": "C:\\Users\\y\\Desktop\\TargetCarrier",
+  "freertos": "V11.2.0",
+  "led_default": false,
+  "led_toggle_ms": 100,
+  "led_full_cycle_ms": 200,
+  "host_groups_passed": 18,
+  "hardware_tested": false,
+  "flashed": false,
+  "builds": {
+    "Debug": {
+      "passed": true,
+      "memory_bytes": {
+        "RAM": 5240,
+        "FLASH": 24632
+      },
+      "source_hashes_match": true,
+      "vectors_verified": true,
+      "static_allocation_only": true,
+      "artifact_sha256": {
+        "stmc8t6.elf": "4bc6f0f07751ec25dd7eb487fb372f1bb935578c5512a301ef394b6786f44321",
+        "stmc8t6.hex": "22cdec9e2aab37e858da8e0790ed459d0a950c0da216d6d9673e1c1356f335b0",
+        "stmc8t6.bin": "e71ab413ac8a6b4d198c6debbd46d8fd499c11e352cf4209058b539912189cbd",
+        "stmc8t6.map": "714890f303e198ca4ad95a9539f7cc1848670b8035774e4e9f2348ae781d48e3"
+      }
+    },
+    "Release": {
+      "passed": true,
+      "memory_bytes": {
+        "RAM": 5224,
+        "FLASH": 13484
+      },
+      "source_hashes_match": true,
+      "vectors_verified": true,
+      "static_allocation_only": true,
+      "artifact_sha256": {
+        "stmc8t6.elf": "0b178e08a2a4aee43468a64a627b44e03965376abe15650f53a0f597b90dae29",
+        "stmc8t6.hex": "e1abfcb909003ba100a81c29becef87a4515a4b8659f182ff4676960a22e226a",
+        "stmc8t6.bin": "976f56d1ea04540ba6864ae43a5b6ac763ec663f848a177b497e5d2c0162fbbb",
+        "stmc8t6.map": "89749994b285334d1f4abd15eddd29d282e85dce77f3182e86b4f44807b9de18"
+      }
+    }
+  },
+  "esp_unchanged": true,
+  "carrier_firmware_added": false,
+  "backup": "C:\\Users\\y\\Desktop\\TargetCarrier\\_backups\\freertos_20261019_154357"
+}

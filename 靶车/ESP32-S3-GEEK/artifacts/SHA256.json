@@ -1,0 +1,9 @@
+{
+  "build.log": "516044e14cbd968663b17f263f47648343f9e4fd1f3dc18d70d0d8d12e647b5f",
+  "ESP32-S3-GEEK_wireless_master.bin": "2cea697c4618a8304b287a4710e99fcb9869a71635a726655e4d4881976f4e61",
+  "ESP32-S3-GEEK_wireless_master.elf": "ba7aca3971bdd30a9653b75d294da32f09b4fee0e8a93a560d42e957f336823f",
+  "sdkconfig": "7cdf2eacc665872a7a051eb07c641da6bffcf292827504a61a5a1f9d033ab7cc",
+  "source-sha256.json": "99951ab98c7e454f0b18d8e29c295328b8726152929c1020a958d77e8a955508",
+  "bootloader\\bootloader.bin": "e01c4cf24dba1562b20395ced3d2b7227d80269a6c7943cb991c4ca737db4823",
+  "partition_table\\partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+}

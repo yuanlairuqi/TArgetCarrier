@@ -1,0 +1,10 @@
+{
+  "backup": "C:\\Users\\y\\Desktop\\TargetCarrier\\ESP32-S3-GEEK\\_backups\\lcd-before-20261022-193802",
+  "application_sha256": "2cea697c4618a8304b287a4710e99fcb9869a71635a726655e4d4881976f4e61",
+  "changed": [
+    "main/panel.c",
+    "main/main.c",
+    "main/font5x7.h"
+  ],
+  "flashed": false
+}

@@ -1,0 +1,338 @@
+[
+  {
+    "role": "stm",
+    "path": "CMakeLists.txt",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\野火stm\\CMakeLists.txt",
+    "before": "a169b19a94d59757ff0c53a7c2a3309a24cbffecc1283bd3a6d2b3256c6ff1ef",
+    "after": "590bd4f9dde741c5fc87e456d4f62e5b7e03f1ee099e2accd8f723079093d864"
+  },
+  {
+    "role": "stm",
+    "path": "App/Display/status_display.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\野火stm\\App\\Display\\status_display.c",
+    "before": "2891cdf757ec8e155d252ebfe5913ff88788dc6f6c4024b2166d657f95763af2",
+    "after": "60addbb1f913a7e55f340527dd365027cba14c11cc29122d38d12f2f2cf77354"
+  },
+  {
+    "role": "stm",
+    "path": "App/Link/robot_peer.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\野火stm\\App\\Link\\robot_peer.c",
+    "before": "076605a5a9be0394dabd5d341abe1f7c23e5d2c3f22b136125ef47f8534e9d6f",
+    "after": "55d1b001ae184c1f867386bfd0019759b5913938127b77c10a112168a545a2cf"
+  },
+  {
+    "role": "stm",
+    "path": "App/Link/robot_peer.h",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\野火stm\\App\\Link\\robot_peer.h",
+    "before": "b9e40e578d1c3bab6b018348992c55be42d4ecad9872843421bd3c2ab228db09",
+    "after": "f0941d7afc64a68912dd7189ac809d9c15b5bb4abfa5fddba05a53f13cd67545"
+  },
+  {
+    "role": "stm",
+    "path": "App/Link/robot_uart.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\野火stm\\App\\Link\\robot_uart.c",
+    "before": "4d669a9ec97f03f2f06378a8b54fefeab107df2684ca4b49323118717a8bcaa5",
+    "after": "128f606b5d7d71916430ed2a66efe348ab1af6e4f260321c652e4768828f7a17"
+  },
+  {
+    "role": "stm",
+    "path": "App/Link/robot_wire.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\野火stm\\App\\Link\\robot_wire.c",
+    "before": "3868c735a5fe46279231dc9e7252d1abe8e0dc57839f991ffde5b1164b6dd575",
+    "after": "43880da5e54096d64acc38cab889bd70f3e61ff4791240c9b5d10473507a9229"
+  },
+  {
+    "role": "stm",
+    "path": "App/Link/robot_wire.h",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\野火stm\\App\\Link\\robot_wire.h",
+    "before": "619e120f1273b954325671e41ca36e2b8b6336ccf8a20835be96564f18e6ee6f",
+    "after": "bc6ef892cdbb23b4398e0db45e1e88ace98554c3b53a9086a198fe330e226666"
+  },
+  {
+    "role": "stm",
+    "path": "App/Motion/motor_config.h",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\野火stm\\App\\Motion\\motor_config.h",
+    "before": "833bb1fbca1cc4c9fc717bf8a3476b16ece1e8707bb236fe83e6e8ca49fb59ad",
+    "after": "c865866ca4231a234d2ea698ec4534ea7003b8f7a102516f89e35c9aa629cb12"
+  },
+  {
+    "role": "stm",
+    "path": "App/Motion/motor_motion.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\野火stm\\App\\Motion\\motor_motion.c",
+    "before": "df49c3e87343d9d10034414afe0d42a5fad4cd2ff2594a9a4324fcf40e916029",
+    "after": "3e13632bbfe4fa350b0b6b70a8ffd48fee9d2f3641bc6c3e8cb4daf77675277d"
+  },
+  {
+    "role": "stm",
+    "path": "App/Motion/motor_motion.h",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\野火stm\\App\\Motion\\motor_motion.h",
+    "before": "fbf8af9f9d0dfea7cad6a3eb0845811ebeef0b8c993a6fd1d5655ba6da1855f8",
+    "after": "3115d160778be13ffef7a7a906e3b976c91a2b1020b4b90ecc2eee8ac63373dc"
+  },
+  {
+    "role": "esp",
+    "path": "main/control_feedback.h",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp\\main\\control_feedback.h",
+    "before": "19c827f052568a4c065bb1effd13ee70f948c9c8f44954d90c4e17b6305ff603",
+    "after": "fec7a031f1ca0629a8d0a1edf30a13278c80b93b5fc3b2df801d45bce625efe5"
+  },
+  {
+    "role": "esp",
+    "path": "main/main.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp\\main\\main.c",
+    "before": "3d5cc5f168cd2527e360ba74b90439aeef212ae2d322b82f0a6fe30cbaa1616b",
+    "after": "deabf49f03bf54ffbfd973c0110634c6f6b8a1106ea851d128d941f0d56f7d10"
+  },
+  {
+    "role": "esp",
+    "path": "main/now_protocol.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp\\main\\now_protocol.c",
+    "before": "5e63738f91949d673cf6b927ea7b36088da73b5820db2ceb9bcbc1083b360f46",
+    "after": "555dae97fb9491998947c2d759538bfe6825be02715ae33706edd8803ef1959b"
+  },
+  {
+    "role": "esp",
+    "path": "main/oled_status.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp\\main\\oled_status.c",
+    "before": "87f6d5a31ec2fa47799c19de170247999a8bd6585e399e3f352dacc968a0632e",
+    "after": "5ad30cadd6f2e725be307b2aa428f409f7db86aa2180ee4f44f3bf3233327424"
+  },
+  {
+    "role": "esp",
+    "path": "main/oled_status.h",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp\\main\\oled_status.h",
+    "before": "316ff9002973c44a4b8250535282ea48c461522d472cef93c53ead2bcdcbf7ff",
+    "after": "fa0cb8e106bfad744682567b5e3e2140f202eb03afca1982cd4ef72a3f4d62b1"
+  },
+  {
+    "role": "esp",
+    "path": "main/robot_bridge.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp\\main\\robot_bridge.c",
+    "before": "716bfdd2d5d10b925c59655feb2e001498d60f7e14e72a07381ad13653708435",
+    "after": "4312c115c51c148b4a9529e7fb6df7014cdfedba6c9900952fbd99a884786d97"
+  },
+  {
+    "role": "esp",
+    "path": "main/robot_bridge.h",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp\\main\\robot_bridge.h",
+    "before": "351d66ceb3dd337280ce5001e5125c10b1a43f1675cb2f38cabc1383952d3909",
+    "after": "65d2276a812b51dd70d5d5af30d60f13c8c56ebb3a9aa6b092f7d09111d3d452"
+  },
+  {
+    "role": "esp",
+    "path": "main/robot_control.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp\\main\\robot_control.c",
+    "before": "7d3b686d2d26bf7940ca9ec2e0ba85d00e88d501708aee95a5cf0afdc4e56fa6",
+    "after": "d3fb8f68a124058d618e07f5727a2ada8230472b6988c0146a8a465f5f3f3eea"
+  },
+  {
+    "role": "esp",
+    "path": "main/robot_control.h",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp\\main\\robot_control.h",
+    "before": "8f4a9a496c61ee04104509cc4bd8fe05214f9febe366ac54a7840e0381992f01",
+    "after": "986ea2fbf8bd56b0f52fe32c54a1479730963f327041359bfdfc9fdfd2f85e27"
+  },
+  {
+    "role": "esp",
+    "path": "shared/robot_wire.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp\\shared\\robot_wire.c",
+    "before": "3868c735a5fe46279231dc9e7252d1abe8e0dc57839f991ffde5b1164b6dd575",
+    "after": "43880da5e54096d64acc38cab889bd70f3e61ff4791240c9b5d10473507a9229"
+  },
+  {
+    "role": "esp",
+    "path": "shared/robot_wire.h",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp\\shared\\robot_wire.h",
+    "before": "619e120f1273b954325671e41ca36e2b8b6336ccf8a20835be96564f18e6ee6f",
+    "after": "bc6ef892cdbb23b4398e0db45e1e88ace98554c3b53a9086a198fe330e226666"
+  },
+  {
+    "role": "slave",
+    "path": "main/control_feedback.h",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\main\\control_feedback.h",
+    "before": "19c827f052568a4c065bb1effd13ee70f948c9c8f44954d90c4e17b6305ff603",
+    "after": "fec7a031f1ca0629a8d0a1edf30a13278c80b93b5fc3b2df801d45bce625efe5"
+  },
+  {
+    "role": "slave",
+    "path": "main/main.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\main\\main.c",
+    "before": "92efbc236b793623d38c25c0636393f7b0b51ea0eb493e4a34cff0b9793846ec",
+    "after": "fc2bdec59b8b97229346c6b47dab2fb3b58a1fdf36b2911c461b6299db801016"
+  },
+  {
+    "role": "slave",
+    "path": "main/now_protocol.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\main\\now_protocol.c",
+    "before": "5e63738f91949d673cf6b927ea7b36088da73b5820db2ceb9bcbc1083b360f46",
+    "after": "555dae97fb9491998947c2d759538bfe6825be02715ae33706edd8803ef1959b"
+  },
+  {
+    "role": "slave",
+    "path": "main/oled_status.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\main\\oled_status.c",
+    "before": "87f6d5a31ec2fa47799c19de170247999a8bd6585e399e3f352dacc968a0632e",
+    "after": "5ad30cadd6f2e725be307b2aa428f409f7db86aa2180ee4f44f3bf3233327424"
+  },
+  {
+    "role": "slave",
+    "path": "main/oled_status.h",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\main\\oled_status.h",
+    "before": "316ff9002973c44a4b8250535282ea48c461522d472cef93c53ead2bcdcbf7ff",
+    "after": "fa0cb8e106bfad744682567b5e3e2140f202eb03afca1982cd4ef72a3f4d62b1"
+  },
+  {
+    "role": "slave",
+    "path": "main/robot_bridge.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\main\\robot_bridge.c",
+    "before": "716bfdd2d5d10b925c59655feb2e001498d60f7e14e72a07381ad13653708435",
+    "after": "4312c115c51c148b4a9529e7fb6df7014cdfedba6c9900952fbd99a884786d97"
+  },
+  {
+    "role": "slave",
+    "path": "main/robot_bridge.h",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\main\\robot_bridge.h",
+    "before": "351d66ceb3dd337280ce5001e5125c10b1a43f1675cb2f38cabc1383952d3909",
+    "after": "65d2276a812b51dd70d5d5af30d60f13c8c56ebb3a9aa6b092f7d09111d3d452"
+  },
+  {
+    "role": "slave",
+    "path": "main/robot_control.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\main\\robot_control.c",
+    "before": "93692a33ed473980eb784581ec4f06054d69693fdc40eb94724e3130ce327d71",
+    "after": "40f4b393019a05d69f77d973d03f2ac1057207c04184e998baf977d66b59dfaf"
+  },
+  {
+    "role": "slave",
+    "path": "main/robot_control.h",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\main\\robot_control.h",
+    "before": "8f4a9a496c61ee04104509cc4bd8fe05214f9febe366ac54a7840e0381992f01",
+    "after": "986ea2fbf8bd56b0f52fe32c54a1479730963f327041359bfdfc9fdfd2f85e27"
+  },
+  {
+    "role": "slave",
+    "path": "shared/robot_wire.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\shared\\robot_wire.c",
+    "before": "3868c735a5fe46279231dc9e7252d1abe8e0dc57839f991ffde5b1164b6dd575",
+    "after": "43880da5e54096d64acc38cab889bd70f3e61ff4791240c9b5d10473507a9229"
+  },
+  {
+    "role": "slave",
+    "path": "shared/robot_wire.h",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\esp_无线从机_20261022\\shared\\robot_wire.h",
+    "before": "619e120f1273b954325671e41ca36e2b8b6336ccf8a20835be96564f18e6ee6f",
+    "after": "bc6ef892cdbb23b4398e0db45e1e88ace98554c3b53a9086a198fe330e226666"
+  },
+  {
+    "role": "geek",
+    "path": "main/now_protocol.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\ESP32-S3-GEEK\\main\\now_protocol.c",
+    "before": "5e63738f91949d673cf6b927ea7b36088da73b5820db2ceb9bcbc1083b360f46",
+    "after": "555dae97fb9491998947c2d759538bfe6825be02715ae33706edd8803ef1959b"
+  },
+  {
+    "role": "geek",
+    "path": "main/robot_control.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\ESP32-S3-GEEK\\main\\robot_control.c",
+    "before": "7d3b686d2d26bf7940ca9ec2e0ba85d00e88d501708aee95a5cf0afdc4e56fa6",
+    "after": "d3fb8f68a124058d618e07f5727a2ada8230472b6988c0146a8a465f5f3f3eea"
+  },
+  {
+    "role": "geek",
+    "path": "main/robot_control.h",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\ESP32-S3-GEEK\\main\\robot_control.h",
+    "before": "8f4a9a496c61ee04104509cc4bd8fe05214f9febe366ac54a7840e0381992f01",
+    "after": "986ea2fbf8bd56b0f52fe32c54a1479730963f327041359bfdfc9fdfd2f85e27"
+  },
+  {
+    "role": "geek",
+    "path": "main/usb_wire.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\ESP32-S3-GEEK\\main\\usb_wire.c",
+    "before": "03d6fb2cb83326a3780f85c236c07dc90ef52097975f4df31a7259e5c036a773",
+    "after": "c44af7f5051846653f2b087a22824a71a12af107c9e73b94ef7159ab72d717f3"
+  },
+  {
+    "role": "pc",
+    "path": "controller.py",
+    "destination": "D:\\TargetCarrier-PC-Vue-USB_20261022\\source\\controller.py",
+    "before": "418700f6157055cdcbfc6cc9cf77c7d469ac8f42f082ef19e8d9d63f19231eec",
+    "after": "8d673fcc36580194ae03c86d2a29487c7f8ab5575e30af015dc4a43ebc59c34a"
+  },
+  {
+    "role": "pc",
+    "path": "desktop.py",
+    "destination": "D:\\TargetCarrier-PC-Vue-USB_20261022\\source\\desktop.py",
+    "before": "d8456035c18daa2b34bb044ffde646f8ac579b9dbc6b11d7b0d1c55c92bc14c9",
+    "after": "2137efc8cd2bec1c331f7a2c1ecf45d05343e3853098e6341e823e4238aadcba"
+  },
+  {
+    "role": "pc",
+    "path": "protocol.py",
+    "destination": "D:\\TargetCarrier-PC-Vue-USB_20261022\\source\\protocol.py",
+    "before": "bcaa758062cca208b9da81ce115242f8b4b7617b373d91b1e06cbff7e884c192",
+    "after": "9bc85b2a0f52f2266f0ca7fe9821138464a9be86c546391370dc7f6738fe931b"
+  },
+  {
+    "role": "pc",
+    "path": "tests/test_desktop.py",
+    "destination": "D:\\TargetCarrier-PC-Vue-USB_20261022\\source\\tests\\test_desktop.py",
+    "before": "97f51a00d9f1c13153a036fbc6f04d4feda913fa68023f809f254ddc8b6e7b6a",
+    "after": "8a6c6c157a7e495f1521fb378d0103b1efd2beb1f78445f1941123686f249e5f"
+  },
+  {
+    "role": "pc",
+    "path": "web/app.js",
+    "destination": "D:\\TargetCarrier-PC-Vue-USB_20261022\\source\\web\\app.js",
+    "before": "90f75babdcbc35cb00cc8e64a313a9bd9bb98de2e08efdf659b0e922363f85a3",
+    "after": "53fa270f70a55fad6fef2ce7881475e4ae953108dcae6d58eaa4867fe8b12c5c"
+  },
+  {
+    "role": "stm",
+    "path": "App/Motion/motion_profile.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\野火stm\\App\\Motion\\motion_profile.c",
+    "before": null,
+    "after": "ab2770d7b8bb2d7563c2d7d1611dbe09bed3a06ed7bfcf268841001a17df1d8a"
+  },
+  {
+    "role": "stm",
+    "path": "App/Motion/motion_profile.h",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\野火stm\\App\\Motion\\motion_profile.h",
+    "before": null,
+    "after": "47c179fe5cb5975662a5ea93dd326e560d9e6754c0c2f4e5eaa9ff9740201998"
+  },
+  {
+    "role": "stm",
+    "path": "tests/test_profile_link.c",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\野火stm\\tests\\test_profile_link.c",
+    "before": null,
+    "after": "c8a6c840ab7cc321a1b53b20ea8eeaac0bdc28824de907e6db493d36e63ddc26"
+  },
+  {
+    "role": "pc",
+    "path": "tests/test_ramp.py",
+    "destination": "D:\\TargetCarrier-PC-Vue-USB_20261022\\source\\tests\\test_ramp.py",
+    "before": null,
+    "after": "17f1236d1d27c9ce3c0f12e240efa4e4faf0eddd957048ee3153faaa45b146a6"
+  },
+  {
+    "role": "tools",
+    "path": "test_manual_control.py",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\tools\\test_manual_control.py",
+    "before": "4812b45de32a018dc8cf073766d5f66c8bc928115771bce6aa47a8c2bfa039cf",
+    "after": "1a004fa9990bd04669cd4aea1afc6b385ce0dd2ca18d27607c62116b6eec56d0"
+  },
+  {
+    "role": "tools",
+    "path": "test_motion_profile.py",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\tools\\test_motion_profile.py",
+    "before": null,
+    "after": "133dd46757e3c8def2b99e15e07d99ce7ec8c95481aa453d4ca334524b025f96"
+  },
+  {
+    "role": "docs",
+    "path": "加减速实施说明.md",
+    "destination": "C:\\Users\\y\\Desktop\\TargetCarrier\\x轴\\加减速实施说明.md",
+    "before": null,
+    "after": "11530b9cf1a27e0b78cb3f6a479f8a30dd53870cebde0d41b88b2f515e521423"
+  }
+]
