@@ -1,6 +1,0 @@
-#include "fragment.h"
-#include <string.h>
-static void p32(uint8_t*p,uint32_t x){for(unsigned i=0;i<4;i++)p[i]=(uint8_t)(x>>(8*i));}
-static uint32_t g32(const uint8_t*p){uint32_t n=0;for(unsigned i=0;i<4;i++)n|=(uint32_t)p[i]<<(8*i);return n;}
-bool frag_encode(const uint8_t*b,size_t n,uint32_t id,unsigned index,uint8_t*out){if(!b||!out||!id||!n||n>72)return false;unsigned count=(unsigned)((n+11)/12);if(index>=count)return false;unsigned len=(unsigned)(n-index*12);if(len>12)len=12;memset(out,0,20);out[0]=1;out[1]=(uint8_t)index;out[2]=(uint8_t)count;out[3]=(uint8_t)len;p32(out+4,id);memcpy(out+8,b+index*12,len);return true;}
-int frag_accept(frag_join*j,const uint8_t*f,uint32_t now,const uint8_t**out,size_t*len){if(!j||!f||!out||!len)return -1;*out=0;*len=0;unsigned i=f[1],count=f[2],n=f[3];uint32_t id=g32(f+4);if(f[0]!=1||!id||!count||count>6||i>=count||!n||n>12||(i+1<count&&n!=12))return -1;for(unsigned k=n;k<12;k++)if(f[8+k])return -1;if(j->active&&(uint32_t)(now-j->started_ms)>500)j->active=false;if(i==0){j->active=true;j->batch_id=id;j->count=(uint8_t)count;j->next=0;j->used=0;j->started_ms=now;}if(!j->active||j->batch_id!=id||j->count!=count||j->next!=i||(unsigned)j->used+n>72){j->active=false;return -1;}memcpy(j->bytes+j->used,f+8,n);j->used+=(uint8_t)n;j->next++;if(j->next==j->count){j->active=false;*out=j->bytes;*len=j->used;return 1;}return 0;}

@@ -1,6 +1,0 @@
-{
-  "manual_yaw_max_dps": 360.0,
-  "trajectory_yaw_max_dps": 90.0,
-  "protocol_rate_max_dps": 360.0,
-  "unit": "motor_shaft_deg_per_second"
-}
