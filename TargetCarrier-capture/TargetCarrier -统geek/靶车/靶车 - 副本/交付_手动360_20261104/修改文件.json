@@ -1,0 +1,6 @@
+[
+  "firmware/esp32_bridge/ble_direct/main/ble_guard.c",
+  "firmware/lib/protocol/protocol.h",
+  "firmware/stm32_f103/include/config.h",
+  "firmware/stm32_f103/src/app_main.c"
+]

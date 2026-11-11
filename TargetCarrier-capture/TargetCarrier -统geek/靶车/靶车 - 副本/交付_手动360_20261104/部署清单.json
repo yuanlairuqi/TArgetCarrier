@@ -1,0 +1,17 @@
+{
+  "target": "C:\\Users\\y\\Desktop\\TargetCarrier -统geek - 抓波\\TargetCarrier -统geek\\靶车\\靶车 - 副本",
+  "existing_changed": [
+    "firmware/esp32_bridge/ble_direct/main/ble_guard.c",
+    "firmware/lib/protocol/protocol.h",
+    "firmware/stm32_f103/include/config.h",
+    "firmware/stm32_f103/src/app_main.c"
+  ],
+  "new_files": [
+    "config/manual_speed_limits.json",
+    "tools/generate_manual_speed_limits.py",
+    "tools/test_manual360.c",
+    "firmware/lib/protocol/manual_speed_limits.h"
+  ],
+  "new_ui": "C:\\Users\\y\\Desktop\\TargetCarrier -统geek - 抓波\\TargetCarrier -统geek\\靶车\\靶车 - 副本\\上位机",
+  "flashed": false
+}

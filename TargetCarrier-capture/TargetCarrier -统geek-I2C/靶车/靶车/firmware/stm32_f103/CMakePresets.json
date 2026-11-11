@@ -1,0 +1,31 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "stm32-f103",
+      "displayName": "STM32F103C8T6 控制器",
+      "description": "MIT 闭环 + CAN。构建目录故意放在纯 ASCII 路径下 (arm-none-eabi-ld 的限制)",
+      "generator": "Ninja",
+      "binaryDir": "C:/cmake_build/target-vehicle/stm32",
+      "toolchainFile": "${sourceDir}/../../cmake/toolchain-stm32f103.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "MinSizeRel",
+        "STM32_CHIP": "STM32F103xB",
+        "STM32_FLASH_SIZE": "65536",
+        "STM32_RAM_SIZE": "20480"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "stm32-f103",
+      "displayName": "编译 STM32 控制器",
+      "configurePreset": "stm32-f103"
+    }
+  ]
+}

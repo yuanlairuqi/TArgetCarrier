@@ -1,0 +1,940 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f2430">
+<title>TargetCarrier · 电机控制台</title>
+<style>
+  :root{
+    --bg:#f5f8fb; --card:#ffffff; --line:#e6ecf2; --fg:#102a43; --dim:#6b7c8f;
+    --accent:#16a394; --accent-weak:#e6f7f3; --danger:#d9534f; --danger-weak:#fdecea;
+    --warn:#c98a00; --shadow:0 1px 2px rgba(16,24,40,.05), 0 8px 24px rgba(16,24,40,.04);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--fg);
+    font:15px/1.5 -apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif}
+  button{font:inherit;cursor:pointer}
+  a{color:var(--accent);text-decoration:none}
+
+  .app{display:flex;min-height:100vh}
+  /* ---------- 侧栏 ---------- */
+  aside{width:212px;flex:0 0 212px;background:#0f2430;color:#cfe0e8;display:flex;flex-direction:column;
+    padding:18px 14px;gap:6px;position:sticky;top:0;height:100vh}
+  .brand{display:flex;align-items:center;gap:10px;margin:2px 4px 18px}
+  .brand .logo{width:34px;height:34px;border-radius:9px;background:var(--accent);display:grid;place-items:center;
+    color:#fff;font-weight:800;font-size:16px}
+  .brand b{color:#fff;font-size:15px;display:block;line-height:1.2}
+  .brand span{font-size:11px;color:#87a6b4;letter-spacing:.06em}
+  .nav{display:flex;flex-direction:column;gap:4px}
+  .nav button{display:flex;align-items:center;gap:10px;padding:10px 12px;border:0;border-radius:10px;
+    background:transparent;color:#a9c2cd;text-align:left;font-size:14px;transition:.15s}
+  .nav button:hover{background:#15303d;color:#dff0f6}
+  .nav button.active{background:var(--accent);color:#fff;font-weight:600}
+  .nav .ico{width:18px;text-align:center;opacity:.9}
+  .side-foot{margin-top:auto;font-size:11px;color:#6d8b99;border-top:1px solid #1b3a48;padding-top:12px}
+  .side-foot b{color:#cfe0e8;font-weight:600}
+
+  /* ---------- 主区 ---------- */
+  main{flex:1;min-width:0;padding:0 0 24px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:16px 26px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+  .crumb{font-size:13px;color:var(--dim)}
+  .crumb b{color:var(--fg);font-weight:600}
+  .topright{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .pill{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;
+    background:#eef4f8;color:#37505f;font-size:12.5px;font-weight:600}
+  .pill .dot{width:8px;height:8px;border-radius:50%;background:#94a3b8}
+  .pill.ok{background:var(--accent-weak);color:#0f766e}
+  .pill.ok .dot{background:var(--accent)}
+  .pill.bad{background:var(--danger-weak);color:#a02a26}
+  .pill.bad .dot{background:var(--danger)}
+  .pill.warn{background:#fdf3e3;color:#8a5a00}
+  .pill.warn .dot{background:var(--warn)}
+  .diag{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:30px}
+  .kvline b.bad{color:#b03a35}
+  .kvline b.ok{color:#0f766e}
+  .kvline b.warn{color:#a16207}
+  .btn-stop{border:1px solid #f3c9c6;background:#fff;color:#b03a35;border-radius:10px;padding:8px 14px;
+    font-weight:600;display:inline-flex;gap:8px;align-items:center}
+  .btn-stop:hover{background:var(--danger-weak)}
+  .btn-run{border:1px solid #bcd8c9;background:#f2faf5;color:#1c6b46;border-radius:10px;
+    padding:8px 14px;font-weight:600}
+  .btn-run:hover{background:#e4f5ea}
+  .btn-run:disabled{opacity:.45;cursor:not-allowed}
+  .btn-resume{border:1px solid #cfd9e6;background:#fff;color:#2b4a6f;border-radius:10px;
+    padding:8px 14px;font-weight:600}
+  .btn-resume:hover{background:#eef3fa}
+  .btn-resume:disabled{opacity:.45;cursor:not-allowed}
+
+  .content{padding:22px 26px 0;display:flex;flex-direction:column;gap:18px}
+  .pagehead h1{margin:0;font-size:26px;letter-spacing:.2px}
+  .pagehead p{margin:6px 0 0;color:var(--dim);font-size:14px}
+
+  /* ---------- 统计卡 ---------- */
+  .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:flex-start}
+  .stat .chip{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:18px}
+  .chip.teal{background:var(--accent-weak);color:var(--accent)}
+  .chip.blue{background:#eaf1fd;color:#2f6fd0}
+  .chip.violet{background:#f0eefe;color:#6b5bd2}
+  .chip.amber{background:#fdf3e3;color:#b7791f}
+  .stat .label{font-size:12.5px;color:var(--dim)}
+  .stat .value{font-size:26px;font-weight:700;line-height:1.2;margin-top:2px;
+    font-family:ui-monospace,"Cascadia Mono",Consolas,monospace}
+  .stat .sub{font-size:11.5px;color:#93a4b5;margin-top:2px}
+
+  /* ---------- 两栏 ---------- */
+  .cols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 20px;box-shadow:var(--shadow)}
+  .card h2{margin:0 0 4px;font-size:16px}
+  .card .desc{color:var(--dim);font-size:12.5px;margin:0 0 14px}
+
+  .seg{display:flex;background:#eef3f7;border-radius:11px;padding:4px;gap:4px;margin-bottom:16px}
+  .seg button{flex:1;border:0;background:transparent;color:#4b6577;border-radius:8px;padding:9px 6px;
+    font-weight:600;font-size:13.5px;transition:.15s}
+  .seg button.on{background:#fff;color:var(--fg);box-shadow:0 1px 2px rgba(16,24,40,.08)}
+
+  .field{margin:14px 0}
+  .field .rowline{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .field .name{font-size:13.5px;color:#3c5566}
+  .field .val{font-family:ui-monospace,Consolas,monospace;font-weight:700;font-size:15px}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent}
+  input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:#dfe7ee}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-6px;
+    border-radius:50%;background:var(--accent);border:3px solid #fff;box-shadow:0 1px 4px rgba(16,24,40,.25)}
+  input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:#dfe7ee}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border:3px solid #fff;border-radius:50%;background:var(--accent)}
+  .ends{display:flex;justify-content:space-between;font-size:11.5px;color:#93a4b5;margin-top:-2px}
+
+  .btnrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px 8px;font-weight:600;
+    font-size:13.5px;color:#33505f;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+  .btn:hover{background:#f3f7fa}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary:hover{background:#12907f}
+  .btn.danger{background:#fff;border-color:#f3c9c6;color:#b03a35}
+  .btn.danger:hover{background:var(--danger-weak)}
+  .btn.ghost{background:#f7fafc}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+
+  /* ---------- 链路图 ---------- */
+  .chain{display:flex;align-items:center;justify-content:space-between;margin:8px 0 18px}
+  .node{display:flex;flex-direction:column;align-items:center;gap:6px;width:88px;text-align:center}
+  .node .circle{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;
+    background:#eef3f7;color:#7d93a4;font-size:19px;border:1px solid #e2eaf0}
+  .node.ok .circle{background:var(--accent-weak);color:var(--accent);border-color:#bfe8e2}
+  .node .nname{font-size:12px;font-weight:600;color:#3c5566}
+  .node .nsub{font-size:11px;color:#93a4b5}
+  .link{flex:1;height:2px;background:#e2eaf0;margin:0 6px;border-radius:2px;position:relative;top:-14px}
+  .link.ok{background:linear-gradient(90deg,var(--accent),#7fd6cb)}
+
+  .kvline{display:flex;justify-content:space-between;padding:9px 0;border-top:1px dashed #e8eef4;font-size:13px}
+  .kvline:first-of-type{border-top:0}
+  .kvline span{color:var(--dim)}
+  .kvline b{font-family:ui-monospace,Consolas,monospace;font-weight:600}
+
+  .tip{display:flex;gap:10px;align-items:flex-start;background:#f2f8fc;border:1px solid #e2eef7;
+    border-radius:12px;padding:12px 14px;color:#3c5566;font-size:13px}
+
+  /* 移动端: 侧栏变顶部标签 */
+  @media (max-width:820px){
+    .app{flex-direction:column}
+    aside{width:auto;flex:none;height:auto;position:static;flex-direction:row;align-items:center;
+      padding:10px 12px;gap:8px;overflow-x:auto}
+    .brand{margin:0 10px 0 0}
+    .brand span{display:none}
+    .nav{flex-direction:row;gap:6px}
+    .nav button{padding:8px 12px;white-space:nowrap}
+    .side-foot{display:none}
+    .topbar{padding:12px 14px}
+    .content{padding:16px 14px 0}
+    .stats{grid-template-columns:1fr 1fr}
+    .cols{grid-template-columns:1fr}
+    .diag{grid-template-columns:1fr}
+    .pagehead h1{font-size:22px}
+  }
+</style>
+</head>
+<body>
+<div id="app" class="app" v-cloak>
+
+  <aside>
+    <div class="brand">
+      <div class="logo">T</div>
+      <div><b>TargetCarrier</b><span>运动控制工作台</span></div>
+    </div>
+    <nav class="nav">
+      <button v-for="t in tabs" :key="t.id" :class="{active: view===t.id}" @click="view=t.id">
+        <span class="ico">{{ t.ico }}</span>{{ t.name }}
+      </button>
+    </nav>
+    <div class="side-foot">
+      当前控制端<br><b>x 轴 · DM-G6220</b><br>
+      固件 <b>v2 · Vue 3</b>
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <div class="crumb">工作空间 / <b>x 轴控制端</b></div>
+      <div class="topright">
+        <span class="pill" :class="linkPill.cls"><i class="dot"></i>{{ linkPill.text }}</span>
+        <span v-if="s.safe === 1" class="pill warn"><i class="dot"></i>安全锁 · 需重新使能</span>
+        <span v-else-if="s.arm === 1" class="pill ok"><i class="dot"></i>已授权</span>
+        <span v-else class="pill"><i class="dot"></i>未授权</span>
+        <button class="btn-run" :disabled="s.safe === 1 || !s.online" @click="send('E')">▶ 使能</button>
+        <button class="btn-resume" @click="send('R')">解除急停 R</button>
+        <button class="btn-stop" @click="send('C')">■ 停止输出</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div v-if="s.estop" class="card" style="border-color:#f3c9c6;background:#fdf3f2;padding:12px 16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div><b style="color:#b03a35">急停已生效</b>
+            <span style="color:#8a5a57;font-size:13px;margin-left:8px">电机已断使能，需点右侧按钮解除</span></div>
+          <button class="btn danger" style="min-width:120px" @click="send('R')">解除急停 R</button>
+        </div>
+      </div>
+
+      <div v-if="s.safe === 1" class="card" style="border-color:#f0d9a8;background:#fffaf0;padding:12px 16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div><b style="color:#8a5a00">安全锁已触发：链路恢复后需重新使能</b>
+            <span style="color:#8a6a30;font-size:13px;margin-left:8px;display:block;margin-top:2px">
+              原因 safe_reason={{ s.safe_reason }}：{{ safeReasonText }}。安全锁期间「使能」被禁用；链路恢复也不会自动恢复运动。</span></div>
+          <span class="pill warn" style="white-space:nowrap"><i class="dot"></i>safe=1</span>
+        </div>
+      </div>
+
+      <div class="pagehead">
+        <h1>{{ tabs.find(t => t.id === view).name }}</h1>
+        <p>{{ tabs.find(t => t.id === view).desc }}</p>
+      </div>
+
+      <!-- 电机控制 -->
+      <template v-if="view === 'ctrl'">
+        <div class="card" style="padding:16px 20px">
+          <h2>运动授权 / 安全</h2>
+          <p class="desc">运动必须由用户明确授权；断链、急停、故障恢复后不会自动恢复运动</p>
+          <div class="diag">
+            <div>
+              <div class="kvline"><span>链路安全 safe</span>
+                <b :class="s.safe === 1 ? 'bad' : 'ok'">{{ s.safe === 1 ? '1 · 安全锁（需重新使能）' : '0 · 正常' }}</b></div>
+              <div class="kvline"><span>安全原因 safe_reason</span><b>{{ s.safe === 1 ? s.safe_reason + ' · ' + safeReasonText : '—' }}</b></div>
+              <div class="kvline"><span>运动授权 arm</span>
+                <b :class="s.arm === 1 ? 'ok' : 'warn'">{{ s.arm === 1 ? '1 · 已授权' : '0 · 未授权' }}</b></div>
+            </div>
+            <div>
+              <div class="kvline"><span>授权令牌 arm_token</span><b>{{ fmtN(s.arm_token) }}</b></div>
+              <div class="kvline"><span>被拒绝的授权 arm_rej</span><b>{{ fmtN(s.arm_rej) }}</b></div>
+              <div class="kvline"><span>STM32 反馈新鲜度</span>
+                <b :class="stFreshOk ? 'ok' : 'bad'">{{ freshBadgeText }}</b></div>
+            </div>
+          </div>
+          <div class="tip" style="margin-top:12px"><span>ℹ</span>
+            <div>safe_reason 是<b>单个原因码</b>（不是位掩码）：<b>1</b>=无线/桥接链路失效（桥接新鲜度帧或 STM32 状态超过 300ms），
+              <b>2</b>=STM32 反馈过期，<b>3</b>=ESP-NOW 发送回调超时（在途 250ms 未回调），
+              <b>4</b>=桥接 FAILSAFE / 拒绝使能（motion blocked），<b>5</b>=其它/待诊断。<br>
+              「使能」前置条件：未急停、kp/kd 合法、桥接与 STM32 均新鲜。急停/停止按钮在任何状态下都可用。</div></div>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="chip teal">◉</div>
+            <div>
+              <div class="label">逻辑状态</div>
+              <div class="value">{{ stateText }}</div>
+              <div class="sub">来自主机状态</div>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="chip blue">⟳</div>
+            <div>
+              <div class="label">轨迹</div>
+              <div class="value">{{ s.mode }}</div>
+              <div class="sub">{{ profLabel }}</div>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="chip violet">↗</div>
+            <div>
+              <div class="label">目标 yaw</div>
+              <div class="value">{{ (+s.yaw).toFixed(2) }}°</div>
+              <div class="sub">pitch {{ (+s.pitch).toFixed(2) }}°</div>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="chip amber">⇄</div>
+            <div>
+              <div class="label">发包 / 失败</div>
+              <div class="value">{{ s.ok }}<span style="font-size:15px;color:#93a4b5"> / {{ s.fail }}</span></div>
+              <div class="sub">运行 {{ s.up || 0 }} s</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cols">
+          <!-- 左: 运行参数 -->
+          <div class="card">
+            <h2>运行参数</h2>
+            <p class="desc">选择运行模式，设置速度与增益</p>
+
+            <div class="seg">
+              <button v-for="(n,i) in profs" :key="i" :class="{on: s.mode === profNames[i]}" @click="send(String(i))">{{ i }} {{ n }}</button>
+            </div>
+
+            <div class="field">
+              <div class="rowline"><span class="name">位置增益 kp</span><span class="val">{{ kp }}</span></div>
+              <input type="range" v-model.number="kp" min="0" max="200" step="1" @change="send('k ' + kp)">
+              <div class="ends"><span>0 柔</span><span>200 硬</span></div>
+            </div>
+            <div class="field">
+              <div class="rowline"><span class="name">阻尼增益 kd</span><span class="val">{{ (+kd).toFixed(1) }}</span></div>
+              <input type="range" v-model.number="kd" min="0" max="3" step="0.1" @change="send('d ' + kd)">
+              <div class="ends"><span>0 抖</span><span>3 稳</span></div>
+            </div>
+            <div class="field">
+              <div class="rowline"><span class="name">正弦幅度 a</span><span class="val">{{ amp }}°</span></div>
+              <input type="range" v-model.number="amp" min="0" max="90" step="1" @change="send('a ' + amp)">
+            </div>
+            <div class="field">
+              <div class="rowline"><span class="name">正弦周期 t</span><span class="val">{{ period }} s</span></div>
+              <input type="range" v-model.number="period" min="1" max="20" step="1" @change="send('t ' + period)">
+            </div>
+
+            <div class="field">
+              <div class="rowline">
+                <span class="name">速度（yaw 角速度）</span>
+                <span class="val">{{ (+vel).toFixed(1) }} °/s</span>
+              </div>
+              <input type="range" v-model.number="vel" min="-90" max="90" step="1" @change="sendVel()">
+              <div class="ends"><span>-90 反转</span><span>0 停</span><span>+90 正转</span></div>
+            </div>
+            <div class="field">
+              <div class="rowline">
+                <span class="name">巡航速度（自动往返）</span>
+                <span class="val">{{ (+cruise).toFixed(1) }} °/s</span>
+              </div>
+              <input type="range" v-model.number="cruise" min="1" max="90" step="1">
+              <div class="rowline" style="margin-top:8px">
+                <span class="name">巡航幅度 ±</span>
+                <span class="val">{{ (+camp).toFixed(0) }} °</span>
+              </div>
+              <input type="range" v-model.number="camp" min="5" max="180" step="5" @change="send('A ' + camp)">
+            </div>
+            <div class="btnrow">
+              <button class="btn primary" @click="send('W ' + cruise)">开始巡航</button>
+              <button class="btn ghost" @click="send('W 0')">停止巡航</button>
+            </div>
+
+            <div class="btnrow">
+              <button class="btn primary" @click="vel = 20; sendVel()">正转 20°/s</button>
+              <button class="btn" @click="vel = -20; sendVel()">反转 20°/s</button>
+              <button class="btn ghost" @click="vel = 0; sendVel()">停止转动</button>
+              <button class="btn" @click="send('s')">刷新状态</button>
+            </div>
+
+            <div class="btnrow">
+              <button class="btn primary" :disabled="!s.online || s.safe === 1" @click="send('E')">使能电机</button>
+              <button class="btn" @click="send('C')">失能电机</button>
+              <button class="btn danger" @click="estopConfirm()">急停</button>
+              <button class="btn" @click="send('R')">解除急停</button>
+            </div>
+            <div class="btnrow" style="margin-top:10px">
+              <input class="num" type="number" v-model.number="ya" step="5" style="width:100%">
+              <button class="btn ghost" @click="send('y ' + ya)">发送 yaw</button>
+            </div>
+          </div>
+
+          <!-- 右: 链路状态 -->
+          <div class="card">
+            <h2>链路状态</h2>
+            <p class="desc">逐层确认控制通道</p>
+
+            <div class="chain">
+              <div class="node" :class="{ok: s.online}">
+                <div class="circle">🖥</div>
+                <div class="nname">控制台</div>
+                <div class="nsub">{{ s.ws ? 'WebSocket' : (s.online ? 'HTTP 轮询' : '未连接') }}</div>
+              </div>
+              <div class="link" :class="{ok: s.online}"></div>
+              <div class="node" :class="{ok: s.ok > 0}">
+                <div class="circle">📶</div>
+                <div class="nname">主机 ESP32</div>
+                <div class="nsub">提交 {{ s.ok }}</div>
+              </div>
+              <div class="link" :class="{ok: stFreshOk}"></div>
+              <div class="node" :class="{ok: stFreshOk}">
+                <div class="circle">⚙</div>
+                <div class="nname">STM32</div>
+                <div class="nsub">{{ chainStmText }}</div>
+              </div>
+            </div>
+
+            <div class="kvline"><span>连接方式</span><b>{{ s.ws ? 'WebSocket 20 Hz' : 'HTTP 轮询' }}</b></div>
+            <div class="kvline"><span>ESP-NOW 信道</span><b>{{ s.ch || '—' }}</b></div>
+            <div class="kvline"><span>主机空闲内存</span><b>{{ s.heap ? (s.heap/1024).toFixed(0) + ' KB' : '—' }}</b></div>
+            <div class="kvline"><span>主机运行时间</span><b>{{ s.up || 0 }} s</b></div>
+            <div class="kvline"><span>当前速度</span><b>{{ (s.ry !== undefined ? (+s.ry).toFixed(1) : '—') }} °/s</b></div>
+            <div class="kvline"><span>速度模式</span><b>{{ s.vel ? '开' : '关' }}</b></div>
+            <div class="kvline"><span>提交失败（主机侧）</span><b>{{ s.fail }}</b></div>
+            <div class="kvline"><span>回调丢包率（5 s 窗口）</span><b>{{ lossPct }}</b></div>
+            <div class="kvline"><span>提交速率</span><b>{{ txRate }}</b></div>
+            <div class="kvline"><span>桥接帧年龄 br_age</span><b>{{ brAgeText }}</b></div>
+            <div class="kvline"><span>桥接 flags（0x{{ brFlagsHex }}）</span><b>{{ brFlagsText }}</b></div>
+
+            <div class="tip" style="margin-top:14px">
+              <span>ℹ</span>
+              <div>STM32 的实时 yaw / 温度 / 故障码见「电机状态」页；桥接 flags 中 <b>STM_FRESH</b>
+                才代表反馈新鲜，桥接不再转发缓存的旧状态。丢包率只用发送回调结果计算。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>通信诊断</h2>
+          <p class="desc">提交 / 回调 / 应用确认三组计数分开统计，禁止把「已提交」当成「已送达」</p>
+          <div class="diag">
+            <div>
+              <div class="kvline"><span>提交成功 tx_sub_ok</span><b>{{ fmtN(s.tx_sub_ok) }}</b></div>
+              <div class="kvline"><span>提交失败 tx_sub_fail</span><b>{{ fmtN(s.tx_sub_fail) }}</b></div>
+              <div class="kvline"><span>回调成功 tx_cb_ok</span><b>{{ fmtN(s.tx_cb_ok) }}</b></div>
+              <div class="kvline"><span>回调失败 tx_cb_fail</span><b>{{ fmtN(s.tx_cb_fail) }}</b></div>
+              <div class="kvline"><span>授权回显 tx_confirm</span><b>{{ fmtN(s.tx_confirm) }}</b></div>
+              <div class="kvline"><span>在途超时 cb_timeout</span><b>{{ fmtN(s.cb_timeout) }}</b></div>
+            </div>
+            <div>
+              <div class="kvline"><span>回调丢包率（累计）</span><b>{{ cbLossText }}</b></div>
+              <div class="kvline"><span>WS 队列丢弃 q_drop</span><b>{{ fmtN(s.q_drop) }}</b></div>
+              <div class="kvline"><span>过期命令丢弃 cmd_age_drop</span><b>{{ fmtN(s.cmd_age_drop) }}</b></div>
+              <div class="kvline"><span>桥接帧年龄 br_age</span><b>{{ brAgeText }}</b></div>
+              <div class="kvline"><span>桥接 flags br_flags</span><b>0x{{ brFlagsHex }} · {{ brFlagsText }}</b></div>
+              <div class="kvline"><span>被拒绝的授权 arm_rej</span><b>{{ fmtN(s.arm_rej) }}</b></div>
+            </div>
+          </div>
+          <div class="tip" style="margin-top:12px"><span>ℹ</span>
+            <div>「提交」= esp_now_send 返回值；「回调」= 可关联的发送完成结果；超时代表结果未知，不等于未送达；
+              「授权回显」= STM32 返回与当前请求匹配的授权令牌，仅证明控制器接受授权，不证明电机已运动或停止。没有回调数据时丢包率显示 <b>--</b>，
+              绝不用提交数冒充成功率。</div></div>
+        </div>
+      </template>
+
+      <!-- 数据曲线 -->
+      <template v-if="view === 'chart'">
+        <div class="card">
+          <h2>实时曲线</h2>
+          <p class="desc">最近 200 点 · {{ s.ws ? 'WebSocket 20 Hz' : 'HTTP 轮询 2 Hz' }}</p>
+          <canvas ref="cv" style="width:100%;height:280px;border-radius:12px;background:#fbfdff;border:1px solid var(--line)"></canvas>
+          <div style="display:flex;gap:18px;margin-top:10px;color:var(--dim);font-size:13px">
+            <span><i style="display:inline-block;width:14px;height:3px;background:#2f6fd0;vertical-align:middle;margin-right:6px"></i>yaw</span>
+            <span><i style="display:inline-block;width:14px;height:3px;background:#16a394;vertical-align:middle;margin-right:6px"></i>pitch</span>
+            <span>{{ rangeText }}</span>
+          </div>
+        </div>
+      </template>
+
+      <!-- 电机状态 -->
+      <template v-if="view === 'motor'">
+        <div class="card">
+          <h2>实时曲线</h2>
+          <p class="desc">位置 / 速度 / 力矩（各自归一化显示，数值见下方图例）</p>
+          <canvas ref="mcv" style="width:100%;height:240px;border-radius:12px;background:#fbfdff;border:1px solid var(--line)"></canvas>
+          <div style="display:flex;gap:18px;margin-top:10px;color:var(--dim);font-size:13px;flex-wrap:wrap">
+            <span><i style="display:inline-block;width:14px;height:3px;background:#2f6fd0;vertical-align:middle;margin-right:6px"></i>位置 {{ fmt3(s.m_pos) }} rad</span>
+            <span><i style="display:inline-block;width:14px;height:3px;background:#16a394;vertical-align:middle;margin-right:6px"></i>速度 {{ fmt2(s.m_vel) }} rad/s</span>
+            <span><i style="display:inline-block;width:14px;height:3px;background:#c98a00;vertical-align:middle;margin-right:6px"></i>力矩 {{ fmt3(s.m_tau) }} N·m</span>
+            <span v-if="!s.m_pos">（等待 STM32 数据…）</span>
+          </div>
+        </div>
+
+        <div class="cols">
+          <div class="card">
+            <h2>电机反馈</h2>
+            <p class="desc">来自 STM32 的 CAN 反馈帧，经桥接 ESP-NOW 回传（10 Hz）</p>
+            <div class="kvline"><span>实际位置</span><b>{{ fmt((s.st_yaw !== undefined ? s.st_yaw : 0)) }} °</b></div>
+            <div class="kvline"><span>当前速度</span><b>{{ (s.ry !== undefined ? (+s.ry).toFixed(1) : '—') }} °/s</b></div>
+            <div class="kvline"><span>驱动 MOS 温度</span><b>{{ s.st_temp !== undefined ? s.st_temp + ' °C' : '—' }}</b></div>
+            <div class="kvline"><span>错误码</span><b>{{ errText }}</b></div>
+            <div class="kvline"><span>链路状态</span><b>{{ stStateText }}</b></div>
+            <div class="kvline"><span>数据新鲜度</span><b :class="stFreshOk ? 'ok' : 'bad'">{{ freshBadgeText }}</b></div>
+            <div class="kvline"><span>回传帧数</span><b>{{ s.st_frames || 0 }}</b></div>
+            <div class="kvline"><span>数据延迟</span><b>{{ ageText }}</b></div>
+            <div class="kvline"><span>运动授权</span><b>{{ s.arm === 1 ? '已授权（令牌 ' + fmtN(s.arm_token) + '）' : '未授权' }}</b></div>
+            <div class="kvline"><span>链路安全锁</span><b>{{ s.safe === 1 ? 'safe_reason=' + s.safe_reason + ' · ' + safeReasonText : '正常' }}</b></div>
+          </div>
+          <div class="card">
+            <h2>电机参数（CAN 0x7FF）</h2>
+            <p class="desc">读/写 DM 电机内部参数；写完记得点"保存参数"才写入 Flash</p>
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+              <input type="number" v-model.number="rid" min="0" max="60" style="width:90px;min-height:40px;border-radius:10px;border:1px solid var(--line);padding:0 10px;font:inherit">
+              <input type="text" v-model="pval" placeholder="值" style="flex:1;min-height:40px;border-radius:10px;border:1px solid var(--line);padding:0 10px;font:inherit">
+              <label style="display:flex;gap:6px;align-items:center;font-size:13px;color:var(--dim)">
+                <input type="checkbox" v-model="pfloat"> 浮点
+              </label>
+            </div>
+            <div class="btnrow" style="grid-template-columns:1fr 1fr 1fr">
+              <button class="btn" @click="readParam()">读取</button>
+              <button class="btn primary" @click="writeParam()">写入</button>
+              <button class="btn danger" @click="saveParam()">保存参数</button>
+            </div>
+            <div class="btnrow" style="grid-template-columns:1fr">
+              <button class="btn ghost" :disabled="reading" @click="readAll()">
+                {{ reading ? '读取中… ' + readDone + '/26' : '读取全部参数 (0~25)' }}
+              </button>
+            </div>
+            <div v-if="paramTable.length" style="margin-top:12px;max-height:260px;overflow:auto">
+              <div v-for="r in paramTable" :key="r.rid" class="kvline">
+                <span>{{ r.rid }} · {{ r.name }}</span>
+                <b>{{ r.text }}</b>
+              </div>
+            </div>
+            <div class="kvline" style="margin-top:12px"><span>RID {{ rid }}</span><b>{{ ridName }}</b></div>
+            <div class="kvline"><span>上次读到的值</span><b>{{ lastValue }}</b></div>
+            <div class="tip" style="margin-top:12px"><span>ℹ</span>
+              <div>只读 RID：0~6、11、12、18~25；uint32 型：7~10、13~16、35~36，其余为浮点。</div></div>
+          </div>
+
+          <div class="card">
+            <h2>错误码对照</h2>
+            <p class="desc">达妙 DM 系列 STATUS 字段含义</p>
+            <div class="kvline"><span>0 / 1</span><b>失能 / 使能</b></div>
+            <div class="kvline"><span>2 / 3</span><b>电机侧未识别 / 输出轴未识别</b></div>
+            <div class="kvline"><span>5 / 7</span><b>读取编码器错误</b></div>
+            <div class="kvline"><span>8 / 9</span><b>超压 / 欠压</b></div>
+            <div class="kvline"><span>A / B</span><b>过电流 / MOS 过温</b></div>
+            <div class="kvline"><span>C / D / E</span><b>线圈过温 / 通讯丢失 / 过载</b></div>
+            <div class="tip" style="margin-top:14px"><span>ℹ</span>
+              <div>参数读写（PID、限幅、极对数等）走 DM 的 0x7FF 参数协议（见「电机参数」卡）；
+                   本页只做反馈/错误码对照。数据是否新鲜以「电机状态」页的
+                   <b>st_fresh</b> 为准，过期数据不会显示成实时。</div></div>
+          </div>
+        </div>
+      </template>
+
+      <!-- 参数预设 -->
+      <template v-if="view === 'preset'">
+        <div class="card">
+          <h2>参数预设</h2>
+          <p class="desc">把当前 kp / kd / 幅度存进槽位，一键切换</p>
+          <div v-for="i in 4" :key="i" style="display:flex;gap:10px;margin-bottom:10px;align-items:center">
+            <input class="txt" type="text" v-model="names[i-1]" :placeholder="ph(i-1)" maxlength="15"
+                   style="flex:1;min-height:42px;border-radius:10px;border:1px solid var(--line);padding:0 12px;font:inherit">
+            <button class="btn ghost" style="min-width:76px" @click="savePreset(i-1)">保存</button>
+            <button class="btn" style="min-width:76px" @click="loadPreset(i-1)">加载</button>
+            <button class="btn danger" style="min-width:60px" @click="delPreset(i-1)">删</button>
+          </div>
+        </div>
+      </template>
+
+      <!-- 维护 -->
+      <template v-if="view === 'maint'">
+        <div class="cols">
+          <div class="card">
+            <h2>维护动作</h2>
+            <p class="desc">慎用：存零点会让当前角度成为新的 0°</p>
+            <div class="btnrow">
+              <button class="btn ghost" @click="send('e')">清错误</button>
+              <button class="btn danger" @click="zero">存零点</button>
+              <button class="btn primary" @click="send('w')">保存参数</button>
+              <button class="btn" @click="send('s')">刷新状态</button>
+            </div>
+            <div class="tip" style="margin-top:14px"><span>ℹ</span>
+              <div>保存参数后掉电不丢；重启请用串口命令 <b>b</b>。</div></div>
+          </div>
+          <div class="card">
+            <h2>其他入口</h2>
+            <p class="desc">配网与设备诊断</p>
+            <div class="kvline"><span>配家里 WiFi</span><a href="/wifi">打开配网页面 →</a></div>
+            <div class="kvline"><span>设备诊断</span><b>{{ s.heap ? (s.heap/1024).toFixed(0) + ' KB 空闲' : '—' }}</b></div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </main>
+</div>
+
+<script src="/vue.js"></script>
+<script>
+const { createApp, reactive, computed, watch, onMounted, nextTick } = Vue;
+
+const state = reactive({
+  online:false, ws:false, en:0, estop:0, mode:'—', yaw:0, pitch:0,
+  kp:0, kd:0, ok:0, fail:0, heap:0, up:0, ch:0,
+  /* v1.1: 新鲜度/安全/授权/诊断字段 (旧固件可能没有, 显示为 —/-- 而不是编造 0) */
+  st_fresh:undefined, st_online:undefined, st_state:undefined, st_age:undefined,
+  br_age:undefined, br_flags:undefined,
+  safe:0, safe_reason:0, arm:0, arm_token:undefined, arm_rej:undefined,
+  q_drop:undefined,
+  tx_sub_ok:undefined, tx_sub_fail:undefined,
+  tx_cb_ok:undefined, tx_cb_fail:undefined, tx_confirm:undefined,
+  cb_timeout:undefined, cmd_age_drop:undefined
+});
+
+function api(cmd){ return fetch('/api/cmd?c=' + encodeURIComponent(cmd)).catch(() => {}); }
+
+let ws = null, wsAlive = false, wsTimer = 0;
+function wsURL(){
+  const p = location.port;
+  return (p === '' || p === '80')
+    ? 'ws://' + location.hostname + ':81/'
+    : 'ws://' + location.hostname + ':' + p + '/ws';
+}
+function startWS(){
+  if (ws && (ws.readyState === 0 || ws.readyState === 1)) return;
+  try { ws = new WebSocket(wsURL()); } catch (e) { return; }
+  ws.onopen = () => { wsAlive = true; state.ws = true; state.online = true; };
+  ws.onmessage = ev => {
+    try { Object.assign(state, JSON.parse(ev.data), { online: true, ws: true }); } catch (e) {}
+  };
+  ws.onclose = () => { wsAlive = false; state.ws = false; clearTimeout(wsTimer); wsTimer = setTimeout(startWS, 2000); };
+  ws.onerror = () => { try { ws.close(); } catch (e) {} };
+}
+async function poll(){
+  if (wsAlive) return;
+  try {
+    const r = await fetch('/api/status', { cache: 'no-store' });
+    Object.assign(state, await r.json(), { online: true });
+  } catch (e) { state.online = false; }
+}
+
+createApp({
+  data(){
+    return {
+      s: state,
+      view: 'ctrl',
+      tabs: [
+        { id:'ctrl',   ico:'⚙', name:'电机控制', desc:'设置运行参数，控制靶车云台运动' },
+        { id:'chart',  ico:'📈', name:'数据曲线', desc:'yaw / pitch 实时曲线' },
+        { id:'motor', ico:'🌀', name:'电机状态', desc:'STM32 / DM-G6220 实时反馈（经桥接回传）' },
+        { id:'preset', ico:'💾', name:'参数预设', desc:'保存/加载常用参数组合' },
+        { id:'maint',  ico:'🛠', name:'维护',     desc:'零点、清错、配网' }
+      ],
+      profs: ['定点','正弦','三角扫描','圆周','八字','手动'],
+      profNames: ['STATIC','SINE','SWEEP','CIRCLE','FIG8','MANUAL'],
+      kp: 60, kd: 1.5, amp: 10, period: 6, ya: 0, vel: 0,
+      rid: 0, pval: '', pfloat: false, pstate: {},
+      cruise: 20, camp: 60,
+      reading: false, readDone: 0, paramTable: [],
+      mhist: [], mmax: 300, txHist: [],
+      hist: [], max: 200, rangeText: '—',
+      presets: [null,null,null,null], names: ['','','',''],
+      _raf: 0
+    };
+  },
+  computed: {
+    stateText(){ return !this.s.online ? '离线' : this.s.estop ? '急停请求' : this.s.enabled === 1 ? '电机反馈：使能' : this.s.enabled === 0 ? (this.s.en ? '等待使能确认' : '电机反馈：失能') : '电机状态未知'; },
+    profLabel(){ return this.profs[this.profNames.indexOf(this.s.mode)] || '—'; },
+    ridName(){
+      const names = {0:'UV 欠压',1:'KT 转矩系数',2:'OT 过温',3:'OC 过流',4:'ACC 加速度',5:'DEC 减速度',
+                     6:'MAX_SPD 最大速度',7:'MIN_POS',8:'MAX_POS',9:'MST_ID 反馈 ID',10:'ESC_ID 电机 ID',
+                     11:'TIMEOUT 超时',12:'CTRL_MODE 控制模式',13:'Damp 阻尼',14:'Inertia 转动惯量',
+                     15:'hw_ver 硬件版本',16:'sw_ver 软件版本',17:'SN 序列号',18:'NPP 极对数',
+                     19:'Rs 相电阻',20:'Ls 相电感',21:'Flux 磁链',22:'Gr 减速比',
+                     23:'PMAX 位置上限',24:'VMAX 速度上限',25:'TMAX 转矩上限'};
+      return names[this.rid] || '（未知 RID）';
+    },
+    lastValue(){
+      const v = this.pstate[String(this.rid)];
+      if (!v) return '—';
+      return this.pfloat ? (+v[1]).toFixed(4) : v[0];
+    },
+    errText(){
+      const e = this.s.st_err;
+      if (e === undefined) return '—';
+      const map = { 0:'失能', 1:'使能', 2:'电机侧未识别', 3:'输出轴未识别', 5:'读取编码器错误',
+                    7:'读取编码器错误', 8:'超压', 9:'欠压', 10:'过电流', 11:'MOS 过温',
+                    12:'线圈过温', 13:'通讯丢失', 14:'过载' };
+      if (map[e]) return `0x${e.toString(16).toUpperCase()} ${map[e]}`;
+      return e >= 8 ? `0x${e.toString(16).toUpperCase()} 故障` : `0x${e.toString(16).toUpperCase()}`;
+    },
+    stStateText(){
+      /* protocol.h: proto_link_state_t —— 0 INIT / 1 OK / 2 TIMEOUT / 3 ESTOP / 4 FAULT。
+       * 必须叠加 st_fresh: 反馈不新鲜时先报「过期/离线」，绝不能把旧数据写成「实时/正常」。 */
+      const v = this.s.st_state;
+      const names = ['INIT/等待', 'OK/使能', 'TIMEOUT/失联超时', 'ESTOP/急停', 'FAULT/故障'];
+      let base;
+      if (v === undefined) base = '—';
+      else if (typeof v === 'number' && v >= 0 && v < names.length) base = names[v] + '（' + v + '）';
+      else base = '未知状态 ' + v;
+      if (this.s.st_fresh === 0) return '过期/离线（' + this.freshAgeMs() + ' ms）· ' + base;
+      if (this.s.st_fresh === 1) return base + ' · 新鲜';
+      return base + '（旧固件无 st_fresh）';
+    },
+    stFreshOk(){
+      /* st_fresh 权威；旧固件没有该字段时用 st_age<300 兜底，但不显示「实时」 */
+      if (this.s.st_fresh === 1) return true;
+      if (this.s.st_fresh === 0) return false;
+      const a = this.s.st_age;
+      return a !== undefined && a !== 0xFFFFFFFF && a < 300;
+    },
+    freshBadgeText(){
+      if (this.s.st_fresh === 1) return '新鲜（' + this.freshAgeMs() + ' ms）';
+      if (this.s.st_fresh === 0) return '过期/离线（' + this.freshAgeMs() + ' ms），不可用于控制';
+      const a = this.s.st_age;
+      if (a === undefined || a === 0xFFFFFFFF) return '无数据';
+      return this.stFreshOk
+        ? ('约 ' + a + ' ms（旧固件无 st_fresh 字段）')
+        : ('过期/离线（' + a + ' ms，旧固件推断）');
+    },
+    chainStmText(){
+      if (this.s.st_fresh === 0) return '反馈过期 ' + this.freshAgeMs() + ' ms';
+      if (this.s.st_fresh === 1) return 'STM_FRESH ' + this.freshAgeMs() + ' ms';
+      return this.stFreshOk ? ('反馈约 ' + this.s.st_age + ' ms') : '无新鲜反馈';
+    },
+    safeReasonText(){
+      /* safe_reason 是标量（不是位掩码）：1..4 是已知链路原因，其余归"其它" */
+      const map = { 1:'无线/桥接链路失效（桥接新鲜度帧或 STM32 状态超过 300ms）',
+                    2:'STM32 反馈过期（数据还在但已老）',
+                    3:'ESP-NOW 发送回调超时（在途 250ms 未回调）',
+                    4:'桥接 FAILSAFE / 拒绝使能（motion blocked）',
+                    5:'其它 / 待诊断（查看串口日志）' };
+      if (this.s.safe_reason === undefined) return '—';
+      return map[this.s.safe_reason] || ('未定义原因(' + this.s.safe_reason + ')，按"其它"处理');
+    },
+    brAgeText(){
+      const a = this.s.br_age;
+      if (a === undefined) return '—（旧固件）';
+      if (a === 0xFFFFFFFF) return '无桥接帧';
+      return a + ' ms' + (a > 300 ? '（过期，>300ms）' : '');
+    },
+    brFlagsHex(){
+      const f = this.s.br_flags;
+      if (f === undefined) return '--';
+      return (f & 0xFF).toString(16).toUpperCase().padStart(2, '0');
+    },
+    brFlagsText(){
+      const f = this.s.br_flags;
+      if (f === undefined) return '旧固件无 br_flags';
+      const bits = [[0x01,'STM_FRESH'],[0x02,'FAILSAFE'],[0x04,'HAVE_STM'],[0x08,'MOTION_BLOCKED'],
+                    [0x10,'UPLINK_READY'],[0x20,'STM_ESTOP'],[0x40,'RX_OVERFLOW']];
+      const on = bits.filter(b => (f & b[0]) !== 0).map(b => b[1]);
+      return on.length ? on.join(' | ') : '0（无标志）';
+    },
+    cbLossText(){
+      if (this.s.tx_cb_sync === 0) return '未知（超时后无法关联回调）';
+      const ok = this.s.tx_cb_ok, fail = this.s.tx_cb_fail;
+      if (ok === undefined && fail === undefined) return '--（无回调数据）';
+      const total = (+ok || 0) + (+fail || 0);
+      if (total <= 0) return '--（无回调数据）';
+      return ((+fail || 0) / total * 100).toFixed(2) + ' %（' + total + ' 次回调）';
+    },
+    ageText(){
+      const a = this.s.st_age;
+      if (a === undefined || a === 0xFFFFFFFF) return '无数据';
+      if (this.s.st_fresh === 0) return '过期/离线（' + a + ' ms）';
+      if (this.s.st_fresh === 1) return a + ' ms（新鲜）';
+      return a + ' ms（旧固件无新鲜度字段）';   /* 不写「实时」 */
+    },
+    lossPct(){
+      /* 只允许用「发送回调」结果算丢包率: cb_fail / (cb_ok + cb_fail)。
+       * 提交成功只代表交给了 WiFi 层, 不代表对方收到。 */
+      const cb = this.txHist.filter(e => e.hasCb);
+      if (cb.length < 2) return '--';
+      const a = cb[0], b = cb[cb.length - 1];
+      const dOk = b.cbOk - a.cbOk, dFail = b.cbFail - a.cbFail;
+      const total = dOk + dFail;
+      if (total <= 0) return '--';
+      return (dFail / total * 100).toFixed(1) + ' %';
+    },
+    txRate(){
+      const h = this.txHist;
+      if (!h || h.length < 2) return '—';
+      const a = h[0], b = h[h.length - 1];
+      const dt = (b.t - a.t) / 1000;
+      if (dt <= 0) return '—';
+      return (((b.ok + b.fail) - (a.ok + a.fail)) / dt).toFixed(1) + ' 帧/秒';
+    },
+    linkPill(){
+      if (!this.s.online) return { cls:'bad', text:'未连接' };
+      if (this.s.safe === 1) return { cls:'warn', text:'安全锁 · 需重新使能' };
+      return this.s.ws ? { cls:'ok', text:'WebSocket 已连接' } : { cls:'', text:'HTTP 轮询中' };
+    }
+  },
+  watch: {
+    's.m_pos'(){ this.pushMotor(); },
+    's.yaw'(){ this.pushSample(); },
+    's.pitch'(){ this.pushSample(); },
+    's.kp'(v){ this.kp = Math.round(v); },
+    's.kd'(v){ this.kd = +(+v).toFixed(1); }
+  },
+  methods: {
+    send: api,
+    fmtN(v){ return (v === undefined || v === null) ? '—' : v; },
+    /* st_age 的安全显示值（有效数字或 '?'）。放 methods 里，computed 里用 this.freshAgeMs() 调用 */
+    freshAgeMs(){
+      const a = this.s.st_age;
+      return (a === undefined || a === 0xFFFFFFFF) ? '?' : a;
+    },
+    fmt(v){ return (+v).toFixed(2); },
+    fmt2(v){ return (+(v || 0)).toFixed(2); },
+    fmt3(v){ return (+(v || 0)).toFixed(3); },
+    pushMotor(){
+      if (!this.s.online) return;
+      this.mhist.push({ p: +this.s.m_pos || 0, v: +this.s.m_vel || 0, t: +this.s.m_tau || 0 });
+      if (this.mhist.length > this.mmax) this.mhist.shift();
+      if (this.view === 'motor') this.scheduleMotor();
+    },
+    scheduleMotor(){
+      if (this._mraf) return;
+      this._mraf = requestAnimationFrame(() => { this._mraf = 0; this.drawMotor(); });
+    },
+    drawMotor(){
+      const cv = this.$refs.mcv;
+      if (!cv) return;
+      const dpr = window.devicePixelRatio || 1;
+      const w = cv.clientWidth || 600, h = cv.clientHeight || 240;
+      if (cv.width !== Math.round(w*dpr) || cv.height !== Math.round(h*dpr)) {
+        cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr);
+      }
+      const g = cv.getContext('2d');
+      g.setTransform(dpr,0,0,dpr,0,0);
+      g.clearRect(0,0,w,h);
+      g.strokeStyle = '#e8eef4'; g.lineWidth = 1;
+      for (let k=1;k<5;k++){ const y=h/5*k; g.beginPath(); g.moveTo(0,y); g.lineTo(w,y); g.stroke(); }
+      const d = this.mhist;
+      if (d.length < 2){ g.fillStyle='#93a4b5'; g.font='13px sans-serif'; g.fillText('等待电机数据…', 14, h/2); return; }
+      const line = (key, color) => {
+        const vals = d.map(o => o[key]);
+        let lo = Math.min(...vals), hi = Math.max(...vals);
+        if (hi - lo < 1e-6) { hi = lo + 1; }
+        g.strokeStyle = color; g.lineWidth = 2; g.beginPath();
+        d.forEach((o,i) => {
+          const x = (i/(this.mmax-1))*w;
+          const y = h - ((o[key]-lo)/(hi-lo))*h;
+          i ? g.lineTo(x,y) : g.moveTo(x,y);
+        });
+        g.stroke();
+      };
+      line('p','#2f6fd0'); line('v','#16a394'); line('t','#c98a00');
+    },
+    sendVel(){ this.send('V ' + this.vel); },
+    estopConfirm(){
+      if (confirm('确认急停？急停会自锁，需要点「解除急停 R」才能恢复出力。')) this.send('x');
+    },
+    readParam(){
+      fetch(`/api/param?op=read&rid=${this.rid}`).then(() => setTimeout(() => this.loadParamState(), 300)).catch(() => {});
+    },
+    writeParam(){
+      const isf = this.pfloat ? 1 : 0;
+      fetch(`/api/param?op=write&rid=${this.rid}&val=${encodeURIComponent(this.pval)}&float=${isf}`)
+        .then(() => setTimeout(() => this.loadParamState(), 300)).catch(() => {});
+    },
+    saveParam(){ fetch('/api/param?op=save&rid=0').catch(() => {}); },
+    ridLabel(rid){
+      const names = {0:'UV 欠压',1:'KT 转矩系数',2:'OT 过温',3:'OC 过流',4:'ACC 加速度',5:'DEC 减速度',
+                     6:'MAX_SPD 最大速度',7:'MIN_POS',8:'MAX_POS',9:'MST_ID 反馈 ID',10:'ESC_ID 电机 ID',
+                     11:'TIMEOUT 超时',12:'CTRL_MODE 控制模式',13:'Damp 阻尼',14:'Inertia 转动惯量',
+                     15:'hw_ver 硬件版本',16:'sw_ver 软件版本',17:'SN 序列号',18:'NPP 极对数',
+                     19:'Rs 相电阻',20:'Ls 相电感',21:'Flux 磁链',22:'Gr 减速比',
+                     23:'PMAX 位置上限',24:'VMAX 速度上限',25:'TMAX 转矩上限'};
+      return names[rid] || ('RID ' + rid);
+    },
+    async readAll(){
+      this.reading = true;
+      this.readDone = 0;
+      this.paramTable = [];
+      for (let rid = 0; rid <= 25; rid++) {
+        try { await fetch(`/api/param?op=read&rid=${rid}`); } catch (e) {}
+        await new Promise(r => setTimeout(r, 120));
+        this.readDone++;
+      }
+      await new Promise(r => setTimeout(r, 400));
+      await this.loadParamState();
+      const isU32 = (rid) => (rid >= 7 && rid <= 10) || (rid >= 13 && rid <= 16) || (rid >= 35 && rid <= 36);
+      const rows = [];
+      for (let rid = 0; rid <= 25; rid++) {
+        const v = this.pstate[String(rid)];
+        rows.push({
+          rid,
+          name: this.ridLabel(rid),
+          text: v ? (isU32(rid) ? String(v[0]) : (+v[1]).toFixed(4)) : '（未读到）'
+        });
+      }
+      this.paramTable = rows;
+      this.reading = false;
+    },
+    loadParamState(){
+      fetch('/api/param/state', { cache:'no-store' }).then(r => r.json()).then(o => { this.pstate = o || {}; }).catch(() => {});
+    },
+    pushSample(){
+      if (!this.s.online) return;
+      this.hist.push({ y: +this.s.yaw, p: +this.s.pitch });
+      if (this.hist.length > this.max) this.hist.shift();
+      if (this.view === 'chart') this.scheduleDraw();
+    },
+    scheduleDraw(){
+      if (this._raf) return;
+      this._raf = requestAnimationFrame(() => { this._raf = 0; this.draw(); });
+    },
+    draw(){
+      const cv = this.$refs.cv;
+      if (!cv) return;
+      const dpr = window.devicePixelRatio || 1;
+      const w = cv.clientWidth || 600, h = cv.clientHeight || 280;
+      if (cv.width !== Math.round(w*dpr) || cv.height !== Math.round(h*dpr)) {
+        cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr);
+      }
+      const g = cv.getContext('2d');
+      g.setTransform(dpr,0,0,dpr,0,0);
+      g.clearRect(0,0,w,h);
+      g.strokeStyle = '#e8eef4'; g.lineWidth = 1;
+      for (let k=1;k<5;k++){ const y=h/5*k; g.beginPath(); g.moveTo(0,y); g.lineTo(w,y); g.stroke(); }
+      const d = this.hist;
+      if (d.length < 2){ g.fillStyle='#93a4b5'; g.font='13px sans-serif'; g.fillText('等待数据…', 14, h/2); return; }
+      let lo = Math.min(...d.map(v=>Math.min(v.y,v.p)));
+      let hi = Math.max(...d.map(v=>Math.max(v.y,v.p)));
+      const pad = Math.max(5,(hi-lo)*0.2); lo-=pad; hi+=pad;
+      this.rangeText = `yaw ${Math.min(...d.map(v=>v.y)).toFixed(1)} … ${Math.max(...d.map(v=>v.y)).toFixed(1)}°`;
+      const xAt = i => (i/(this.max-1))*w;
+      const yAt = v => h - ((v-lo)/(hi-lo))*h;
+      const line = (key,color) => {
+        g.strokeStyle = color; g.lineWidth = 2; g.beginPath();
+        d.forEach((v,i)=>{ const x=xAt(i+(this.max-d.length)), y=yAt(v[key]); i?g.lineTo(x,y):g.moveTo(x,y); });
+        g.stroke();
+      };
+      line('y','#2f6fd0'); line('p','#16a394');
+    },
+    zero(){ if (confirm('把当前位置存为零点？用错会让角度整体偏移！')) this.send('z'); },
+    ph(i){ const p=this.presets[i]; return p ? `kp ${p.kp} / kd ${p.kd} / a ${p.a} / t ${p.t}` : `槽 ${i+1}（未保存）`; },
+    reloadPresets(){
+      fetch('/api/presets', { cache:'no-store' }).then(r=>r.json()).then(list=>{
+        const by={}; (list||[]).forEach(p=>{ if(p&&p.i>=0&&p.i<4) by[p.i]=p; });
+        this.presets=[0,1,2,3].map(i=>by[i]||null);
+        this.names=this.presets.map(p=>p?p.name:'');
+      }).catch(()=>{});
+    },
+    savePreset(i){
+      const name=(this.names[i]||('槽'+(i+1)));
+      fetch(`/api/preset/save?i=${i}&name=${encodeURIComponent(name)}`).then(()=>this.reloadPresets());
+    },
+    loadPreset(i){ fetch(`/api/preset/load?i=${i}`).then(()=>this.reloadPresets()).then(()=>poll()); },
+    delPreset(i){ if(!confirm(`删除槽 ${i+1}？`)) return; fetch(`/api/preset/del?i=${i}`).then(()=>this.reloadPresets()); }
+  },
+  mounted(){
+    startWS(); poll(); setInterval(poll, 500);
+    this.reloadPresets();
+    this.loadParamState();
+    setInterval(() => {
+      if (this.s.ok === undefined) return;
+      const hasCb = this.s.tx_cb_sync !== 0 && (this.s.tx_cb_ok !== undefined || this.s.tx_cb_fail !== undefined);
+      this.txHist.push({
+        t: Date.now(),
+        ok: +this.s.ok || 0, fail: +this.s.fail || 0,
+        cbOk: +this.s.tx_cb_ok || 0, cbFail: +this.s.tx_cb_fail || 0,
+        hasCb: hasCb
+      });
+      if (this.txHist.length > 10) this.txHist.shift();
+    }, 500);
+    setInterval(() => this.loadParamState(), 1500);
+    this.$nextTick(()=>{ if (this.view==='chart') this.draw(); });
+  },
+  updated(){ if (this.view === 'chart') this.scheduleDraw(); }
+}).mount('#app');
+</script>
+</body>
+</html>
