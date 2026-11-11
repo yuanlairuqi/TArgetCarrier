@@ -1,0 +1,23 @@
+[
+  {
+    "label": "master",
+    "exit": 0,
+    "command": [
+      "C:\\Espressif\\tools\\python\\v6.1\\venv\\Scripts\\python.exe",
+      "C:\\Espressif\\v6.1\\esp-idf\\tools\\idf.py",
+      "-C",
+      "C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-master-build\\src\\master",
+      "-B",
+      "C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-master-build\\master",
+      "-D",
+      "IDF_TARGET=esp32s3",
+      "-D",
+      "SDKCONFIG=C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-master-build\\master\\sdkconfig",
+      "-D",
+      "SDKCONFIG_DEFAULTS=C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-master-build\\src\\master\\sdkconfig.defaults",
+      "-D",
+      "WIRED_TRANSPORT_ROOT=C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-master-build\\src\\wired_transport",
+      "build"
+    ]
+  }
+]

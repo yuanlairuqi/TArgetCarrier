@@ -1,0 +1,50 @@
+[
+  {
+    "source": "wired_transport",
+    "snapshot": "C:\\Users\\y\\Documents\\Codex\\2026-10-24\\thread-01a168c2-4c9c-7691-8639-5676b4a8b738-4\\work\\bus-variants\\build-I2C\\src\\wired_transport",
+    "checked": 17,
+    "mismatch": []
+  },
+  {
+    "source": "x轴/esp_无线从机_20261022",
+    "snapshot": "C:\\Users\\y\\Documents\\Codex\\2026-10-24\\thread-01a168c2-4c9c-7691-8639-5676b4a8b738-4\\work\\bus-variants\\build-I2C\\src\\xesp",
+    "checked": 29,
+    "mismatch": []
+  },
+  {
+    "source": "靶车/靶车/firmware/esp32_bridge/ble_direct",
+    "snapshot": "C:\\Users\\y\\Documents\\Codex\\2026-10-24\\thread-01a168c2-4c9c-7691-8639-5676b4a8b738-4\\work\\bus-variants\\build-I2C\\src\\vehicle\\firmware\\esp32_bridge\\ble_direct",
+    "checked": 13,
+    "mismatch": []
+  },
+  {
+    "source": "wired_transport",
+    "snapshot": "C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-delivery-stm\\src\\wired_transport",
+    "checked": 17,
+    "mismatch": []
+  },
+  {
+    "source": "x轴/野火stm",
+    "snapshot": "C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-delivery-stm\\src\\xstm",
+    "checked": 131,
+    "mismatch": []
+  },
+  {
+    "source": "靶车/靶车/firmware/stm32_f103",
+    "snapshot": "C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-delivery-stm\\src\\vehicle\\firmware\\stm32_f103",
+    "checked": 53,
+    "mismatch": []
+  },
+  {
+    "source": "wired_transport",
+    "snapshot": "C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-ble-build\\src\\wired_transport",
+    "checked": 17,
+    "mismatch": []
+  },
+  {
+    "source": "x轴/esp",
+    "snapshot": "C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-ble-build\\src\\xble",
+    "checked": 27,
+    "mismatch": []
+  }
+]

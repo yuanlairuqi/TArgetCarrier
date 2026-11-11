@@ -1,0 +1,247 @@
+[
+  {
+    "file": "README.md",
+    "sha256": "0ed5c55be6e706e8bd0fa0403a79a1d94ff75b591ea29047f8eac8afc5b49b55",
+    "new": false
+  },
+  {
+    "file": "portable_comms/config/tc_board.h",
+    "sha256": "2d3c727ff044b439fb6e07eec218b4b8177444c7377965c427263eb586ba7115",
+    "new": false
+  },
+  {
+    "file": "portable_comms/firmware/esp32/CMakeLists.txt",
+    "sha256": "768377cc3b60bbf4312cc7c5055e0287677f1e80565111b8034411eba60e2204",
+    "new": false
+  },
+  {
+    "file": "portable_comms/firmware/stm32/CMakeLists.txt",
+    "sha256": "eb7542957cd8a345736f8da2d4a2b31409f32c2bdd159cbc05d100221bafadaa",
+    "new": false
+  },
+  {
+    "file": "portable_comms/platform/esp_bus.c",
+    "sha256": "2e8f1fa5e572ea973ccb5239fad9df6c95f9717d79d1c59eec02b202a1eccc66",
+    "new": false
+  },
+  {
+    "file": "portable_comms/platform/stm32_bus.c",
+    "sha256": "2b4602b5bb569f6e95606139e65af7998987f9b06c726ea077fa712806cb9e0e",
+    "new": false
+  },
+  {
+    "file": "tools/build_dualnow.py",
+    "sha256": "fcd66f9e8d28d8ffedc2720930ebd4ae3e4860c86c3876fd01388686e4d90b08",
+    "new": false
+  },
+  {
+    "file": "tools/build_wired.py",
+    "sha256": "9700293501ce0b9505da46f3d5cdea61d1981b9d452f2fa488fa843b0ba5a1cb",
+    "new": true
+  },
+  {
+    "file": "tools/test_wired.py",
+    "sha256": "8fe52be07079b2b48428ae2250cbb0c827e3fb030b2b66e86cacf2d4d9cbaa1e",
+    "new": true
+  },
+  {
+    "file": "wired_transport/esp_bus.c",
+    "sha256": "2e8f1fa5e572ea973ccb5239fad9df6c95f9717d79d1c59eec02b202a1eccc66",
+    "new": true
+  },
+  {
+    "file": "wired_transport/stm32_bus.c",
+    "sha256": "28131f836242d95075bfb2ed42bce468c8007e32f7cae033a0a2ba834bf2df52",
+    "new": true
+  },
+  {
+    "file": "wired_transport/target_stm_link_uart.cpp",
+    "sha256": "9a90eb9fef5dc0a5c4511780bddf040765c31167d82350410a512b14e43c368e",
+    "new": true
+  },
+  {
+    "file": "wired_transport/tc.h",
+    "sha256": "ae45eb3d94369991ea7fb5b54704841f87e83905c726dcf0fae8debb6a80f601",
+    "new": true
+  },
+  {
+    "file": "wired_transport/tc_board.h",
+    "sha256": "2d3c727ff044b439fb6e07eec218b4b8177444c7377965c427263eb586ba7115",
+    "new": true
+  },
+  {
+    "file": "wired_transport/tc_bus.h",
+    "sha256": "92f71530f031ae5321d7372636b651e00cdd7a2db356b20c2d7aefa03fa0b416",
+    "new": true
+  },
+  {
+    "file": "wired_transport/tc_protocol.c",
+    "sha256": "a9b753e5ee91714ff242ae09b12423e5c894695360385f6b61ee3feffcc77b2f",
+    "new": true
+  },
+  {
+    "file": "wired_transport/variant.json",
+    "sha256": "a2a5d3a5e6d56daff44e42fcced44529672d1c89a9698d54c5f3d80d7854d7fa",
+    "new": true
+  },
+  {
+    "file": "wired_transport/wired_esp.cmake",
+    "sha256": "48cc87eb084ef0635ae11ee49a69725d350c1493c48cfe50c74a50a70bcc9b53",
+    "new": true
+  },
+  {
+    "file": "wired_transport/wired_stm.cmake",
+    "sha256": "3b1b21bebb61c4a17729e790c00e0131fbda6d0602b9f7b59908dbe5b6bd65bd",
+    "new": true
+  },
+  {
+    "file": "wired_transport/wl_codec.c",
+    "sha256": "e3c3484a44f91ff208401a5a4fbb0c8f5e8a1b4e59ce9551188141a70c73ab8d",
+    "new": true
+  },
+  {
+    "file": "wired_transport/wl_codec.h",
+    "sha256": "8868cf1b93c3f5fe4f9e4bd6833a5d0a196b810e63005d594c9d7d4fe82249ec",
+    "new": true
+  },
+  {
+    "file": "wired_transport/wl_esp.c",
+    "sha256": "6c7e476ca6ca8c90b62b3cfa08f8e7ae5043d31f21b06c81d11293580b0be345",
+    "new": true
+  },
+  {
+    "file": "wired_transport/wl_esp.h",
+    "sha256": "7ef8e8b609df839fd9461a99996a69f8819a9d45bd9eb34a3eb67111decca024",
+    "new": true
+  },
+  {
+    "file": "wired_transport/wl_stm.c",
+    "sha256": "eeec14ae543d0fc455c8ffe097b94ad4538f06be50b9dba7f4b9dacfe67967c6",
+    "new": true
+  },
+  {
+    "file": "wired_transport/wl_stm.h",
+    "sha256": "d53e0a35c75f22ff026eff7807d670251b3f8c91b6019b6ee086af6d322112e4",
+    "new": true
+  },
+  {
+    "file": "wired_transport/x_esp_uart_link.c",
+    "sha256": "bb0421fe988c58d5ee90cd731f1c086ef7c1fd054d8516c06a568b0422b7bff0",
+    "new": true
+  },
+  {
+    "file": "wired_transport/x_stm_robot_uart.c",
+    "sha256": "7e70840cec0ca66dfa58e4e243a37543dd41212d8710bd2263f5954de74f5442",
+    "new": true
+  },
+  {
+    "file": "wired_transport/tests/test_codec.c",
+    "sha256": "119715b13753fb8b3b26f9852687b823cf934e76b22a05f5df807a6fbba8cbf0",
+    "new": true
+  },
+  {
+    "file": "wired_transport/tests/test_esp_bus.c",
+    "sha256": "1ed025111aabc6c5667bfae06386dcce5f29cc30b3dd535b567991862bbec9a1",
+    "new": true
+  },
+  {
+    "file": "wired_transport/tests/test_stm32.c",
+    "sha256": "4284b6d247aff1c7559870d5ab44788d647408ccee40eccfce564e0ac0c4a722",
+    "new": true
+  },
+  {
+    "file": "wired_transport/tests/test_x_business.c",
+    "sha256": "54a1d137ef872c309d92314d08ccaa66fd47a026e2782916268fa2f8b737f3fe",
+    "new": true
+  },
+  {
+    "file": "wired_transport/tests/esp_mocks/esp_attr.h",
+    "sha256": "f558a67ad860061b117b8fa33f63856eff1f1d3782c67fdcbc06f457f84d09e9",
+    "new": true
+  },
+  {
+    "file": "wired_transport/tests/esp_mocks/esp_stubs.h",
+    "sha256": "85ec45b2d68924faffabcdaa6d76a6087be93e576d6e0f8d170b3d3809963784",
+    "new": true
+  },
+  {
+    "file": "wired_transport/tests/esp_mocks/driver/gpio.h",
+    "sha256": "f558a67ad860061b117b8fa33f63856eff1f1d3782c67fdcbc06f457f84d09e9",
+    "new": true
+  },
+  {
+    "file": "wired_transport/tests/esp_mocks/driver/i2c_master.h",
+    "sha256": "f558a67ad860061b117b8fa33f63856eff1f1d3782c67fdcbc06f457f84d09e9",
+    "new": true
+  },
+  {
+    "file": "wired_transport/tests/esp_mocks/driver/spi_master.h",
+    "sha256": "f558a67ad860061b117b8fa33f63856eff1f1d3782c67fdcbc06f457f84d09e9",
+    "new": true
+  },
+  {
+    "file": "wired_transport/tests/esp_mocks/driver/uart.h",
+    "sha256": "f558a67ad860061b117b8fa33f63856eff1f1d3782c67fdcbc06f457f84d09e9",
+    "new": true
+  },
+  {
+    "file": "wired_transport/tests/mocks/stm32f1xx.h",
+    "sha256": "358d3c9ab73ed0ff450158eecfa633d328724b7724bceb490ebc0537c9a1b08c",
+    "new": true
+  },
+  {
+    "file": "x轴/esp/main/CMakeLists.txt",
+    "sha256": "8d04da9e0fcd7da7ba26bf7d169d1c6c0c65945fe6191e36d011080d28d6ac8b",
+    "new": false
+  },
+  {
+    "file": "x轴/esp/main/uart_link.c",
+    "sha256": "bb0421fe988c58d5ee90cd731f1c086ef7c1fd054d8516c06a568b0422b7bff0",
+    "new": false
+  },
+  {
+    "file": "x轴/esp_无线从机_20261022/main/CMakeLists.txt",
+    "sha256": "58f5c4e738e4c6f8ab31d5a7dd1bff076bfef208baa01a1fd40f244e7ccd984b",
+    "new": false
+  },
+  {
+    "file": "x轴/esp_无线从机_20261022/main/uart_link.c",
+    "sha256": "bb0421fe988c58d5ee90cd731f1c086ef7c1fd054d8516c06a568b0422b7bff0",
+    "new": false
+  },
+  {
+    "file": "x轴/野火stm/CMakeLists.txt",
+    "sha256": "cc832eed8523df09daa85235717a7ecf233e945f496b6075f0c9a3a9397318ee",
+    "new": false
+  },
+  {
+    "file": "x轴/野火stm/App/Link/robot_uart.c",
+    "sha256": "7e70840cec0ca66dfa58e4e243a37543dd41212d8710bd2263f5954de74f5442",
+    "new": false
+  },
+  {
+    "file": "x轴/野火stm/Core/Src/main.c",
+    "sha256": "b1d2dc9c8317f90441cd0b6b34f5855c9620c98ed6f19d32e59ae8f9c95edb80",
+    "new": false
+  },
+  {
+    "file": "靶车/靶车/firmware/esp32_bridge/ble_direct/main/CMakeLists.txt",
+    "sha256": "3f4aeb7c4e31177be40db7b57bfe65f4b5b79ccb6b9e4ac3b8f9693614f093de",
+    "new": false
+  },
+  {
+    "file": "靶车/靶车/firmware/esp32_bridge/ble_direct/main/main.c",
+    "sha256": "cdee5a6e3e98470fe03af39aa894b2f93ce80ce8b48fb8dbdce105258a968e6c",
+    "new": false
+  },
+  {
+    "file": "靶车/靶车/firmware/stm32_f103/CMakeLists.txt",
+    "sha256": "abdc64efe730e80f6e993fbb26689a3d62c94ed30545bbcb453c84a309addf1a",
+    "new": false
+  },
+  {
+    "file": "靶车/靶车/firmware/stm32_f103/src/link_uart.cpp",
+    "sha256": "9a90eb9fef5dc0a5c4511780bddf040765c31167d82350410a512b14e43c368e",
+    "new": false
+  }
+]

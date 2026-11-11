@@ -1,0 +1,24 @@
+[
+  {
+    "label": "xstm",
+    "exit": 0,
+    "command": [
+      "C:\\Espressif\\tools\\cmake\\4.0.3\\bin\\cmake.exe",
+      "--build",
+      "C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-delivery-stm\\xstm",
+      "--parallel",
+      "4"
+    ]
+  },
+  {
+    "label": "target-stm",
+    "exit": 0,
+    "command": [
+      "C:\\Espressif\\tools\\cmake\\4.0.3\\bin\\cmake.exe",
+      "--build",
+      "C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-delivery-stm\\target-stm",
+      "--parallel",
+      "4"
+    ]
+  }
+]

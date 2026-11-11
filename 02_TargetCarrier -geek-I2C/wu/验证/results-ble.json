@@ -1,0 +1,15 @@
+[
+  {
+    "label": "xble",
+    "exit": 0,
+    "command": [
+      "C:\\Espressif\\tools\\python\\v6.1\\venv\\Scripts\\python.exe",
+      "C:\\Espressif\\v6.1\\esp-idf\\tools\\idf.py",
+      "-C",
+      "C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-ble-build\\src\\xble",
+      "-B",
+      "C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-ble-build\\xble",
+      "build"
+    ]
+  }
+]

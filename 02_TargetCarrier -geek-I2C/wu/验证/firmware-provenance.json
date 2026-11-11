@@ -1,0 +1,38 @@
+[
+  {
+    "node": "x轴STM32",
+    "source_build": "C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-delivery-stm\\xstm",
+    "status": "compiled; not flashed",
+    "paired": null
+  },
+  {
+    "node": "靶车STM32",
+    "source_build": "C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-delivery-stm\\target-stm",
+    "status": "compiled; not flashed",
+    "paired": null
+  },
+  {
+    "node": "x轴ESP-NOW从机",
+    "source_build": "C:\\Users\\y\\Documents\\Codex\\2026-10-24\\thread-01a168c2-4c9c-7691-8639-5676b4a8b738-4\\work\\bus-variants\\build-I2C\\xesp",
+    "status": "compiled; not flashed",
+    "paired": false
+  },
+  {
+    "node": "x轴BLE备选从机",
+    "source_build": "C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-ble-build\\xble",
+    "status": "compiled; not flashed",
+    "paired": false
+  },
+  {
+    "node": "靶车ESP从机",
+    "source_build": "C:\\Users\\y\\Documents\\Codex\\2026-10-24\\thread-01a168c2-4c9c-7691-8639-5676b4a8b738-4\\work\\bus-variants\\build-I2C\\target-esp",
+    "status": "compiled; not flashed",
+    "paired": false
+  },
+  {
+    "node": "GEEK无线主机",
+    "source_build": "C:\\Users\\y\\Documents\\Codex\\work\\wired-i2c-master-build\\master",
+    "status": "compiled; not flashed",
+    "paired": false
+  }
+]

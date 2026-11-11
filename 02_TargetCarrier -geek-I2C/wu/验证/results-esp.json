@@ -1,0 +1,28 @@
+[
+  {
+    "label": "xesp",
+    "exit": 0,
+    "command": [
+      "C:\\Espressif\\tools\\python\\v6.1\\venv\\Scripts\\python.exe",
+      "C:\\Espressif\\v6.1\\esp-idf\\tools\\idf.py",
+      "-C",
+      "C:\\Users\\y\\Documents\\Codex\\2026-10-24\\thread-01a168c2-4c9c-7691-8639-5676b4a8b738-4\\work\\bus-variants\\build-I2C\\src\\xesp",
+      "-B",
+      "C:\\Users\\y\\Documents\\Codex\\2026-10-24\\thread-01a168c2-4c9c-7691-8639-5676b4a8b738-4\\work\\bus-variants\\build-I2C\\xesp",
+      "build"
+    ]
+  },
+  {
+    "label": "target-esp",
+    "exit": 0,
+    "command": [
+      "C:\\Espressif\\tools\\python\\v6.1\\venv\\Scripts\\python.exe",
+      "C:\\Espressif\\v6.1\\esp-idf\\tools\\idf.py",
+      "-C",
+      "C:\\Users\\y\\Documents\\Codex\\2026-10-24\\thread-01a168c2-4c9c-7691-8639-5676b4a8b738-4\\work\\bus-variants\\build-I2C\\src\\vehicle\\firmware\\esp32_bridge\\ble_direct",
+      "-B",
+      "C:\\Users\\y\\Documents\\Codex\\2026-10-24\\thread-01a168c2-4c9c-7691-8639-5676b4a8b738-4\\work\\bus-variants\\build-I2C\\target-esp",
+      "build"
+    ]
+  }
+]

@@ -1,0 +1,83 @@
+--- a/firmware/esp32_bridge/ble_direct/main/ble_guard.c
++++ b/firmware/esp32_bridge/ble_direct/main/ble_guard.c
+@@ -9,8 +9,10 @@
+ bool tb_frame_valid(const uint8_t *f,size_t size){
+     if(!f||size!=17)return false;
+     if(f[2]==PROTO_MSG_CTRL){ctrl_payload_t p;uint8_t seq;
+-        return proto_decode_ctrl(f,17,&p,&seq)&&p.mode<=MOTOR_MODE_PSI&&p.yaw_q>=-18000&&p.yaw_q<=18000&&
+-            p.pitch_q>=-3000&&p.pitch_q<=6000&&p.yawrate_q>=-1800&&p.yawrate_q<=1800&&p.pitchrate_q>=-1800&&p.pitchrate_q<=1800;}
++        if(!proto_decode_ctrl(f,17,&p,&seq))return false;
++        const int limit=(p.flags & CTRL_FLAG_VELOCITY)?(int)(MANUAL_YAW_MAX_DPS/PROTO_RATE_SCALE):1800;
++        return p.mode<=MOTOR_MODE_PSI&&p.yaw_q>=-18000&&p.yaw_q<=18000&&
++            p.pitch_q>=-3000&&p.pitch_q<=6000&&p.yawrate_q>=-limit&&p.yawrate_q<=limit&&p.pitchrate_q>=-1800&&p.pitchrate_q<=1800;}
+     if(f[2]==PROTO_MSG_GAINS){float kp,kd;return proto_decode_gains(f,17,&kp,&kd)&&kp>=0&&kp<=200&&kd>=0&&kd<=3;}
+     if(f[2]==PROTO_MSG_PARAM){uint8_t op;return proto_decode_param(f,17,&op,NULL,NULL)&&op>=1&&op<=4;}
+     return false;
+--- a/firmware/lib/protocol/protocol.h
++++ b/firmware/lib/protocol/protocol.h
+@@ -22,7 +22,7 @@
+  *      7    2    yaw_q   单圈朝向 = deg(-180..180) / 0.01，非机械行程限位。
+  *                      v6.1 CTRL_FLAG_VELOCITY 时完全不参与偏航控制。
+  *      9    2    pitch_q 俯仰角量化值  = deg(-90..90)   / PROTO_ANGLE_SCALE(0.01)  ->  -9000..9000
+- *     11    2    yawrate 偏航速度量化值 = dps(-180..180) / PROTO_RATE_SCALE(0.1)   -> -1800..1800
++ *     11    2    yawrate 偏航速度量化值 = dps(-360..360) / PROTO_RATE_SCALE(0.1)   -> -3600..3600
+  *     13    2    pitchrate 俯仰速度量化值
+  *     15    1    crc16    = CRC16-Modbus(bytes[1..14]) 低 8 位
+  *
+@@ -74,7 +74,8 @@
+ 
+ #define PROTO_YAW_LIMIT_DEG       180.0f
+ #define PROTO_PITCH_LIMIT_DEG     90.0f
+-#define PROTO_RATE_LIMIT_DPS      180.0f
++#include "manual_speed_limits.h"
++#define PROTO_RATE_LIMIT_DPS      WIRE_RATE_MAX_DPS
+ 
+ /* 控制帧字节数 (含 帧头 + 载荷 + CRC + 帧尾) */
+ #define CTRL_FRAME_SIZE           17u     /* 0xAA,len,type,seq,flags(2),mode,yaw(2),pitch(2),yawrate(2),pitchrate(2),crc,lrc,0x55 */
+@@ -404,7 +405,7 @@
+  *   - 旧固件会忽略该位 (只在旧 STM32 上会退化为普通 flags=0 帧), 线格式不变。 */
+ #define CTRL_FLAG_VELOCITY        0x0040u  /* v6.1 MIT speed-only: kp=0, no position accumulation */
+ #define PROTO_CAPABILITY_RID       254u
+-#define PROTO_CAPABILITY_VALUE     0x00060100u
++#define PROTO_CAPABILITY_VALUE     0x00060101u
+ #define CTRL_FLAG_FAILSAFE        0x0020u
+ #define CTRL_FLAG_ARM_TOKEN_MASK  0xFF00u
+ #define CTRL_FLAG_ARM_TOKEN_SHIFT 8u
+--- a/firmware/stm32_f103/include/config.h
++++ b/firmware/stm32_f103/include/config.h
+@@ -117,7 +117,9 @@
+ /* 偏航连续旋转的速度/斜坡配置；俯仰尚未接电机                         */
+ /* ================================================================== */
+ /* Yaw travel limits removed. Wire yaw is a single-turn orientation only. */
+-#define GIMBAL_SPEED_MAX_DPS      90.0f
++#include "../../lib/protocol/manual_speed_limits.h"
++#define GIMBAL_SPEED_MAX_DPS      TRAJECTORY_YAW_MAX_DPS
++#define GIMBAL_MANUAL_SPEED_MAX_DPS MANUAL_YAW_MAX_DPS
+ #define GIMBAL_ACCEL_DPS2         30.0f
+ #define GIMBAL_JERK_DPS3          120.0f
+ #define GIMBAL_PITCH_MIN_DEG      ( -30.0f)
+--- a/firmware/stm32_f103/src/app_main.c
++++ b/firmware/stm32_f103/src/app_main.c
+@@ -596,7 +596,7 @@
+     bool drive = want_enable && (velocity_mode ? s_target_kd > 0.0f : s_target_kp > 0.0f);
+     gm_step(&s_motion, drive, velocity_mode, s_target_pos_rad,
+             s_target_vel_rad_s, fb.valid ? fb.pos_rad : 0.0f, dt,
+-            GIMBAL_SPEED_MAX_DPS * DEG2RAD, GIMBAL_ACCEL_DPS2 * DEG2RAD,
++            (velocity_mode ? GIMBAL_MANUAL_SPEED_MAX_DPS : GIMBAL_SPEED_MAX_DPS) * DEG2RAD, GIMBAL_ACCEL_DPS2 * DEG2RAD,
+             GIMBAL_JERK_DPS3 * DEG2RAD, MOTOR_PMAX);
+     mit.pos_rad   = velocity_mode ? 0.0f : s_motion.position;
+     mit.vel_rad_s = s_motion.velocity * ratio;
+@@ -748,6 +748,13 @@
+                         break;
+                     }
+ 
++                    if ((pl.flags & CTRL_FLAG_VELOCITY) && !(pl.flags & (CTRL_FLAG_FAILSAFE | CTRL_FLAG_ESTOP)) &&
++                        (pl.yawrate_q < -(int)(MANUAL_YAW_MAX_DPS / PROTO_RATE_SCALE) ||
++                         pl.yawrate_q > (int)(MANUAL_YAW_MAX_DPS / PROTO_RATE_SCALE))) {
++                        g_link_drop_cmds++;
++                        break;
++                    }
++
+                     /* 桥接本地注入的 FAILSAFE 帧: 不是主机原帧, 不参与序号窗口,
+                      * 只作为"立即进入安全态"的事件。 */
+                     if (pl.flags & CTRL_FLAG_FAILSAFE) {
