@@ -1,0 +1,7 @@
+[
+  "codec",
+  "stm-driver",
+  "esp-driver",
+  "x-business",
+  "target-guard"
+]

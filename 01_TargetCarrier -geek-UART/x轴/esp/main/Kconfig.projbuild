@@ -1,0 +1,138 @@
+menu "Robot battery input (disabled until wiring is confirmed)"
+config ROBOT_BATTERY_ENABLED
+    bool "Enable real ADC battery input"
+    default n
+    help
+        Connect a verified resistor divider first. Never connect a battery
+        directly to the ADC pin. ESP32-S3 ADC1 channel 0 corresponds to GPIO1.
+config ROBOT_BATTERY_CHANNEL
+    int "ADC1 channel (0..9 maps to GPIO1..10 on ESP32-S3)"
+    range 0 9
+    default 0
+    depends on ROBOT_BATTERY_ENABLED
+config ROBOT_BATTERY_R_TOP
+    int "Divider resistor: battery to ADC (ohm)"
+    range 1 1000000
+    default 100000
+    depends on ROBOT_BATTERY_ENABLED
+config ROBOT_BATTERY_R_BOTTOM
+    int "Divider resistor: ADC to GND (ohm)"
+    range 1 1000000
+    default 33000
+    depends on ROBOT_BATTERY_ENABLED
+endmenu
+menu "Robot UART to STM32 (configure after hardware confirmation)"
+config ROBOT_UART_ENABLED
+    bool "Enable STM32 UART bridge"
+    default n
+config ROBOT_UART_PORT
+    int "ESP32 UART port (do not use console UART0)"
+    range 1 2
+    default 1
+    depends on ROBOT_UART_ENABLED
+config ROBOT_UART_TX_GPIO
+    int "TX GPIO (-1 = hardware not decided)"
+    range -1 48
+    default -1
+    depends on ROBOT_UART_ENABLED
+config ROBOT_UART_RX_GPIO
+    int "RX GPIO (-1 = hardware not decided)"
+    range -1 48
+    default -1
+    depends on ROBOT_UART_ENABLED
+config ROBOT_UART_BAUD
+    int "UART baud rate, 8 data bits, no parity, 1 stop bit"
+    range 9600 2000000
+    default 115200
+    depends on ROBOT_UART_ENABLED
+endmenu
+
+menu "PUL/DIR hardware logic capture (3.3V inputs only)"
+config ROBOT_PULSE_CAPTURE_ENABLED
+    bool "Enable two-channel MCPWM hardware input capture"
+    default n
+    help
+        Measure the STM32 PA8/PB0 3.3V output nodes, with common ground.
+        Do not connect driver PUL+/PUL-/DIR+/DIR- terminals to ESP GPIOs.
+config ROBOT_PULSE_PUL_GPIO
+    int "PUL input GPIO"
+    range 0 48
+    default 6
+    depends on ROBOT_PULSE_CAPTURE_ENABLED
+config ROBOT_PULSE_DIR_GPIO
+    int "DIR input GPIO"
+    range 0 48
+    default 7
+    depends on ROBOT_PULSE_CAPTURE_ENABLED
+endmenu
+
+menu "GEEK ESP-NOW control input (private pairing required)"
+config ROBOT_ESPNOW_ENABLED
+    bool "Enable encrypted ESP-NOW receiver alongside BLE"
+    default n
+    help
+        One paired GEEK controller, unicast only. BLE connections own control;
+        remote control needs a STOP handshake after BLE disconnect or timeout.
+        Empty or invalid MAC/keys leave wireless control disabled.
+config ROBOT_ESPNOW_NODE_ID
+    int "Node ID (unique for this controlled node)"
+    range 1 65535
+    default 1
+    depends on ROBOT_ESPNOW_ENABLED
+config ROBOT_ESPNOW_CHANNEL
+    int "Shared 2.4GHz channel (must match the controller)"
+    range 1 13
+    default 1
+    depends on ROBOT_ESPNOW_ENABLED
+config ROBOT_ESPNOW_CONTROLLER_MAC
+    string "Controller Wi-Fi STA MAC (aa:bb:cc:dd:ee:ff)"
+    default ""
+    depends on ROBOT_ESPNOW_ENABLED
+config ROBOT_ESPNOW_PMK
+    string "Private PMK (32 hex digits; do not commit)"
+    default ""
+    depends on ROBOT_ESPNOW_ENABLED
+config ROBOT_ESPNOW_AUTH_KEY
+    string "Private application HMAC key (64 hex digits; do not commit)"
+    default ""
+    depends on ROBOT_ESPNOW_ENABLED
+config ROBOT_ESPNOW_LMK
+    string "Private peer LMK (32 hex digits; do not commit)"
+    default ""
+    depends on ROBOT_ESPNOW_ENABLED
+endmenu
+
+menu "Local diagnostic OLED (panel type must be verified)"
+config ROBOT_OLED_ENABLED
+    bool "Enable independent low-priority OLED status task"
+    default y
+config ROBOT_OLED_SH1106
+    bool "SH1106 (otherwise SSD1306)"
+    default n
+    depends on ROBOT_OLED_ENABLED
+config ROBOT_OLED_HEIGHT
+    int "Height: 32 or 64 pixels"
+    range 32 64
+    default 64
+    depends on ROBOT_OLED_ENABLED
+config ROBOT_OLED_ADDRESS
+    int "7-bit address: 0 auto (0x3c/0x3d), 60 or 61"
+    range 0 61
+    default 0
+    depends on ROBOT_OLED_ENABLED
+config ROBOT_OLED_SCL_GPIO
+    int "SCL GPIO"
+    range 0 48
+    default 9
+    depends on ROBOT_OLED_ENABLED
+config ROBOT_OLED_SDA_GPIO
+    int "SDA GPIO"
+    range 0 48
+    default 8
+    depends on ROBOT_OLED_ENABLED
+config ROBOT_OLED_PERIOD_MS
+    int "Refresh interval in ms"
+    range 250 5000
+    default 500
+    depends on ROBOT_OLED_ENABLED
+endmenu

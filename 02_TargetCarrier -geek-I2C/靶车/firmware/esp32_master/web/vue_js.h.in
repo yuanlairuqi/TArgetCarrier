@@ -1,0 +1,3 @@
+// 由 CMake 从 web/vue.global.prod.js 生成 (Vue 3 生产版运行时)
+#pragma once
+static const char kVueJs[] = R"WWW(@_WEB_VUE_JS@)WWW";

@@ -1,0 +1,32 @@
+[
+  {
+    "case": "valid",
+    "compiler_exit": 0,
+    "expected_accept": true,
+    "passed": true
+  },
+  {
+    "case": "GPIO16-unexposed",
+    "compiler_exit": 1,
+    "expected_accept": false,
+    "passed": true
+  },
+  {
+    "case": "GPIO8-OLED-conflict",
+    "compiler_exit": 1,
+    "expected_accept": false,
+    "passed": true
+  },
+  {
+    "case": "GPIO10-user-output",
+    "compiler_exit": 1,
+    "expected_accept": false,
+    "passed": true
+  },
+  {
+    "case": "duplicate",
+    "compiler_exit": 1,
+    "expected_accept": false,
+    "passed": true
+  }
+]

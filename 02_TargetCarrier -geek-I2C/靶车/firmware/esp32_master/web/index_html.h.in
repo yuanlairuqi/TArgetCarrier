@@ -1,0 +1,11 @@
+// ============================================================================
+//  web_index.h —— 由 CMake 在配置阶段从 web/index.html 生成, 不要手改本文件!
+//
+//  改页面:   编辑 firmware/esp32_master/web/index.html
+//  重新生成: 任何一次 cmake 配置 (改过 index.html 会自动触发重配)
+// ============================================================================
+#pragma once
+
+// 用 R"WWW(...)WWW" 原始字符串包起来: 页面里的引号/反斜杠都不用转义。
+// (index.html 里不能出现 )WWW" 这个序列)
+static const char kIndexHtml[] = R"WWW(@_WEB_INDEX_HTML@)WWW";

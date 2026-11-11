@@ -1,0 +1,9 @@
+{
+  "base": "C:\\Users\\y\\Desktop\\TargetCarrier -统geek",
+  "destinations": [
+    "C:\\Users\\y\\Desktop\\TargetCarrier -统geek-SPI",
+    "C:\\Users\\y\\Desktop\\TargetCarrier -统geek-I2C"
+  ],
+  "files_checked": 3397,
+  "source_unchanged": true
+}

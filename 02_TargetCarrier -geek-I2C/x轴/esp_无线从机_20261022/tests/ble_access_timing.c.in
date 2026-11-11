@@ -1,0 +1,53 @@
+
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
+#include "now_protocol.h"
+#include "robot_wire.h"
+static robot_control_t robot;
+static now_control_t wireless;
+static uint32_t clock_ms;
+static int lock,inject;
+static uint32_t now_ms(void){return clock_ms;}
+static void putseq(uint8_t *b,uint32_t seq){memcpy(b+4,&seq,4);}
+static void xSemaphoreTake(int l,int t){(void)l;(void)t;if(inject){inject=0;clock_ms+=2;uint8_t b[16]={4,1,40,0};putseq(b,1);b[12]=b[14]=200;assert(now_ble_command(&wireless,&robot,b,16,clock_ms));}}
+static void xSemaphoreGive(int l){(void)l;}
+static void apply_limit(void){}
+static void diagnostic_update_locked(uint32_t t){(void)t;}
+#define portMAX_DELAY 0
+#define ESP_LOGI(...) ((void)0)
+#define BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN 13
+#define BLE_ATT_ERR_UNLIKELY 14
+struct os_mbuf{uint16_t len;uint8_t data[16];};
+struct ble_gatt_access_ctxt{struct os_mbuf *om;};
+#define OS_MBUF_PKTLEN(m) ((m)->len)
+static int ble_hs_mbuf_to_flat(struct os_mbuf *m,void *b,size_t n,uint16_t *len){if(n<m->len)return -1;memcpy(b,m->data,m->len);*len=m->len;return 0;}
+typedef struct {int value;} now_radio_stats_t;
+static void now_radio_stats(now_radio_stats_t *s){s->value=0;}
+static bool battery_read(uint16_t *v){(void)v;return false;}
+static int uart_link_read(uint8_t *b,size_t n){(void)b;(void)n;return 0;}
+@ACCESS@
+@TIME@
+static void setup(void){robot_init(&robot);now_control_init(&wireless,1,123);now_ble_connection(&wireless,&robot,true);clock_ms=100;robot.uart_configured=true;}
+static int send(uint8_t op,uint32_t seq){struct os_mbuf m={.len=16,.data={4,op,op?40:0,0}};putseq(m.data,seq);m.data[12]=m.data[14]=200;struct ble_gatt_access_ctxt c={&m};return access_command(1,2,&c,NULL);}
+int main(int argc,char **argv){
+ assert(argc==2);setup();
+ if(!strcmp(argv[1],"gatt")){
+  assert(send(0,1)==0 && robot.ack==1);
+  assert(send(1,2)==0); /* Transport receipt must not pretend business acceptance. */
+  assert(robot.motion==ROBOT_STOP && robot.error==ROBOT_STM_OFFLINE && robot.ack==1);
+  robot.stm_online=true;robot.stm_flags=1;robot.stm_error=robot.link_error=0;
+  assert(send(1,3)==0 && robot.motion==ROBOT_FORWARD && robot.ack==3);
+  clock_ms+=50;assert(send(1,3)==0 && robot.last_motion_ms==100); /* Replay does not renew lease. */
+  struct os_mbuf invalid={.len=16,.data={4,1,0,0}};putseq(invalid.data,4);invalid.data[12]=invalid.data[14]=200;
+  struct ble_gatt_access_ctxt ic={&invalid};assert(access_command(1,2,&ic,NULL)==0);
+  assert(robot.motion==ROBOT_STOP && robot.error==ROBOT_BAD_COMMAND && robot.ack==3);
+  struct os_mbuf bad={.len=15};struct ble_gatt_access_ctxt c={&bad};assert(access_command(1,2,&c,NULL)==13 && robot.motion==ROBOT_STOP);
+  puts("PASS valid rejected/replayed writes keep transport; business rejection, ACK, STOP and lease rules preserved");
+ }else{
+  robot.uart_configured=false;inject=1;uint32_t tick=capture_tick_time();robot_tick(&robot,tick);
+  assert(robot.motion==ROBOT_FORWARD && robot.error==ROBOT_OK);
+  robot_tick(&robot,clock_ms+ROBOT_TIMEOUT_MS);assert(robot.motion==ROBOT_STOP && robot.error==ROBOT_TIMEOUT);
+  puts("PASS callback while waiting for mutex cannot cause false lease expiry; real expiry still stops");
+ }
+}

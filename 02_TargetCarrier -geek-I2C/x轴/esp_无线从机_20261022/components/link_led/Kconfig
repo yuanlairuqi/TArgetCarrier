@@ -1,0 +1,15 @@
+menu "WS2812 connection indicator"
+config LINK_LED_ENABLED
+    bool "Enable GPIO10 WS2812 connection indicator"
+    default y
+config LINK_LED_COUNT
+    int "Number of chained WS2812 LEDs"
+    range 1 32
+    default 3
+    depends on LINK_LED_ENABLED
+config LINK_LED_BRIGHTNESS
+    int "Channel brightness (0..32)"
+    range 0 32
+    default 8
+    depends on LINK_LED_ENABLED
+endmenu

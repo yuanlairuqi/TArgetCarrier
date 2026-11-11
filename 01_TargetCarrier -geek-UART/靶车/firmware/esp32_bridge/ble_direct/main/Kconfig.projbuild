@@ -1,0 +1,35 @@
+menu "Target encrypted ESP-NOW"
+config ROBOT_ESPNOW_ENABLED
+    bool "Enable encrypted ESP-NOW receiver alongside BLE"
+    default n
+    help
+        One paired GEEK controller, unicast only. A valid radio STOP session owns
+        control exclusively until timeout. BLE emergency STOP remains available.
+        Empty or invalid MAC/keys leave wireless control disabled.
+config ROBOT_ESPNOW_NODE_ID
+    int "Node ID (unique for this controlled node)"
+    range 2 2
+    default 2
+    depends on ROBOT_ESPNOW_ENABLED
+config ROBOT_ESPNOW_CHANNEL
+    int "Shared 2.4GHz channel (must match the controller)"
+    range 1 13
+    default 1
+    depends on ROBOT_ESPNOW_ENABLED
+config ROBOT_ESPNOW_CONTROLLER_MAC
+    string "Controller Wi-Fi STA MAC (aa:bb:cc:dd:ee:ff)"
+    default ""
+    depends on ROBOT_ESPNOW_ENABLED
+config ROBOT_ESPNOW_PMK
+    string "Private PMK (32 hex digits; do not commit)"
+    default ""
+    depends on ROBOT_ESPNOW_ENABLED
+config ROBOT_ESPNOW_AUTH_KEY
+    string "Private application HMAC key (64 hex digits; do not commit)"
+    default ""
+    depends on ROBOT_ESPNOW_ENABLED
+config ROBOT_ESPNOW_LMK
+    string "Private peer LMK (32 hex digits; do not commit)"
+    default ""
+    depends on ROBOT_ESPNOW_ENABLED
+endmenu
