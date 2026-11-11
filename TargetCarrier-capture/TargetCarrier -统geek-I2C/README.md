@@ -1,0 +1,51 @@
+# I2C 业务通信副本
+
+2026-11-10：靶车两端 I2C 固件构建与接线见 [靶车 I2C 说明](任务/20261110靶车I2C接线.md)。支持 `--target target-stm` / `--target target-esp` 单独构建靶车；板上旧 UART 固件需两端配套更新。
+
+2026-11-09：已合并原版后续源码，GPIO10 用于 WS2812 灯效；请先阅读 [本次合并说明](任务/20261109合并说明.md)。下方及其他旧说明可能描述合并前的状态。
+
+本目录由 TargetCarrier -统geek 完整复制。x轴与靶车两组 STM32↔ESP32 已在业务工程中接入 I2C，不是只改变独立示例宏。请优先阅读[任务说明](任务/README.md)和[接线表](任务/接线与验收.md)。
+
+构建：`python tools/build_wired.py --out C:/Users/y/Documents/Codex/work/new-i2c`；测试：`python tools/test_wired.py --out C:/Users/y/Documents/Codex/work/test-i2c`。不会自动烧录或操作电机。
+
+下方内容是复制前的历史说明，其UART接线和旧输出路径不适用于本副本。
+
+---
+
+# TArgetCarrier
+
+本工程创建于 2026-10-19。原工程只读复制，未修改源文件。
+
+## 目录
+
+- x轴/野火stm：野火 STM32F103C8T6 的独立 CMake 固件项目。
+- x轴/esp：ESP32-S3 的独立 ESP-IDF CMake 固件项目。
+- x轴/android：2026-10-20新增的手机手动连续控制端，说明及交付文件见 x轴/README.md。
+- 靶车：预留空目录，本轮不实施。
+
+两端硬件相同，沿用既有接线。S3 G4(TX)→STM32 PB11(RX)，G5(RX)←PB10(TX)，GND共地；STM32 PA8(PUL)→S3 G6，PB0(DIR)→S3 G7。
+
+## 当前状态与后续要求
+
+- STM32 已于2026-10-19移植 FreeRTOS-Kernel V11.2.0，详见 x轴/野火stm/FREERTOS_PORT.md。
+- ESP32-S3 已使用 ESP-IDF 提供的 FreeRTOS。
+- 两个固件分别构建，使用不同交叉工具链；没有合并为一个 CMake 编译目标。
+- 后续要求通过宏配置功能和参数。现有 STM32 部分参数位于 App/Motion/motor_config.h；ESP 的 Kconfig 位于 main/Kconfig.projbuild。尚未补齐或统一宏配置。修改编译宏后需要重新构建并烧录。
+- STM32继续使用CMake；本机中文路径请使用 x轴/野火stm/tools/build_stm32.py 构建，参数见 FREERTOS_PORT.md。
+- ESP 使用现有 ESP-IDF 环境，通过 idf.py build 构建。当前目录含中文；既有工具链曾发生中文路径兼容问题，后续构建应准备独立 ASCII 路径副本并使用新构建目录。
+- sdkconfig 和 sdkconfig.defaults 原样保留；未复制临时 ESP-NOW 校验配置或配对文件，未改变无线及运动开关。
+- 2026-10-20：X轴 STM32 连续运动默认启用、复位后定量脉冲默认关闭；ESP-NOW仍默认关闭。本轮连续运动固件与APK仅构建，尚未烧录与验证实际电机运动，详见 x轴/README.md。
+
+## 复制范围
+
+仅复制两个固件的源码、驱动、CMake配置、STM32 .ioc/启动/链接文件和 ESP SDK配置。
+初次复制未包含安卓、旧构建缓存、交付固件、Keil工程、原仓库Git历史、历史备份、配套文档和测试工具。2026-10-20因新增手机控制需求，已单独加入X轴Android源码、测试与交付文件。
+COPY_MANIFEST.csv 记录每个复制文件的源路径与 SHA-256；复制后逐文件校验目标内容，并复核对应原文件未变化。
+以上复制记录为初始状态；2026-10-19已追加STM32 FreeRTOS移植，最终构建记录见 verification/freertos。
+
+原工程：C:\Users\y\Desktop\靶车项目\11_电机控制完整项目_野火STM32F103C8T6双USB
+
+## STM32 FreeRTOS 更新（2026-10-19）
+
+详细任务、灯配置、构建方式和注意事项：[FREERTOS_PORT.md](x轴/野火stm/FREERTOS_PORT.md)。
+本项目LED默认：OFF（主工程默认不闪灯）。ESP及靶车目录未改动。

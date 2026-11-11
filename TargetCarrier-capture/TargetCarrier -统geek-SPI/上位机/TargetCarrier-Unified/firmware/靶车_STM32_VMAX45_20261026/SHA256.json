@@ -1,0 +1,16 @@
+{
+  "firmware.bin": "a3d7264436085763d96848b529c5913b352a7d1667958b8dc10a4cf1674ca22b",
+  "firmware.elf": "e1e2bf18921842acd2ade5979d9d92db56b811a1117025d01a48ab7b19c634f6",
+  "firmware.hex": "0e363907498fd7f6bccf293fbc3685870c80f95e0b487b2fc542c298069a967f",
+  "firmware.map": "e3a791768546647720a5f57c3d4cd26359f548bba134de844d037c9766eef8ba",
+  "修复说明.md": "7e2f0585f3e1daf76e969484c8337a360d9eb65237f0125be109c2ac19986a1a",
+  "source/config.h": "69902f5ed184e6554b180b2b10d64411ab891a7af9cb5df02e529628ed4b96f4",
+  "verification/artifact-check.json": "1087b38d71bc139e16e449104044f8c091425738b708b2ce86e5292e1409b16b",
+  "verification/baseline.json": "529d502efafe07457dbb1b88489fd07e0d4e8055e3caf35ae06e9c213d2c8a36",
+  "verification/build.log": "4db689c978cc0fa388abfff5fcbbba4f9f0cf647b15d588acfbfc35352a223d0",
+  "verification/can-rx-tests.log": "64577332fed4700d5306daa0fa7c1bd588a03141cd4a57ebf0ba1b45995db71a",
+  "verification/config-before.h": "9b46284aa05d16f5d3637216d011f29721bda502cf3e3c33b9f780b1acbd7fe6",
+  "verification/config-change.patch": "d689e375a9c41a5085302312031e20c2227cf397ccfcde9a4fe3285aa1724f2b",
+  "verification/configure.log": "1a0ed2542810b44c324eb4275edc3253acb7c58ba0f4d004df71a8b06b62238f",
+  "verification/vmax-tests.log": "ab11b1e60e4579402b38f3145607f94422c360d9bcc2e9fa5f307f45a1b09d36"
+}

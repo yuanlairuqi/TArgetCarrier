@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.22)
+set(TC_ROLE 1 CACHE STRING "1 GEEK transmitter USB/radio, 2 S3 receiver radio/bus")
+set(TC_BACKEND 1 CACHE STRING "1 UART, 2 SPI, 3 I2C")
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+project(tc_esp32)

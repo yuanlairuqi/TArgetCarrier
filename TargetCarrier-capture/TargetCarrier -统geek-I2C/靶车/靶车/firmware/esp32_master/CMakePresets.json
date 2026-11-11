@@ -1,0 +1,29 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "esp32-master",
+      "displayName": "ESP32 主机 (M5Stamp S3 / ESP32-S3)",
+      "description": "ESP-NOW 发射端。产物: build/firmware.bin",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "toolchainFile": "${sourceDir}/../../cmake/toolchain-esp32s3.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "ESP32S3_VARIANT": "m5stack_stamp_s3"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "esp32-master",
+      "displayName": "编译 ESP32 主机",
+      "configurePreset": "esp32-master"
+    }
+  ]
+}
