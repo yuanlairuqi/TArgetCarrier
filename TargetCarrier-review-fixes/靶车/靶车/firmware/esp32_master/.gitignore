@@ -1,0 +1,10 @@
+# CMake 构建产物
+build/
+
+# VS Code / IntelliSense 缓存
+.vscode/ipch/
+.vscode/browse.vc.db*
+.vscode/.browse.*
+
+# 旧的 PlatformIO 构建目录 (本项目已改用 CMake, 这里保留忽略规则以防误提交)
+.pio/

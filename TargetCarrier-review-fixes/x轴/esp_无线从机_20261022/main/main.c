@@ -1,0 +1,273 @@
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/semphr.h"
+#include "esp_log.h"
+#include "esp_timer.h"
+#include "nvs_flash.h"
+#include "nimble/nimble_port.h"
+#include "nimble/nimble_port_freertos.h"
+#include "host/ble_hs.h"
+#include "host/util/util.h"
+#include "services/gap/ble_svc_gap.h"
+#include "services/gatt/ble_svc_gatt.h"
+#include "robot_control.h"
+#include "battery.h"
+#include "robot_bridge.h"
+#include "uart_link.h"
+#include "esp_random.h"
+#include "pulse_capture.h"
+#include "now_protocol.h"
+#include "now_radio.h"
+#include "control_feedback.h"
+#include "oled_status.h"
+#include "esp_system.h"
+static now_control_t wireless;
+static bool wireless_available;
+static void put32w(uint8_t *p,uint32_t v){for(int i=0;i<4;i++)p[i]=(uint8_t)(v>>(8*i));}
+static bool radio_wave(const uint8_t packet[20],uint32_t start,uint16_t index,uint16_t total){
+    uint8_t out[64]={ 'W','N',1,4 };
+    put32w(out+4,wireless.node);put32w(out+8,wireless.boot);put32w(out+12,wireless.epoch);
+    put32w(out+16,wireless.session);put32w(out+24,start);
+    out[28]=(uint8_t)index;out[29]=(uint8_t)(index>>8);out[30]=(uint8_t)total;out[31]=(uint8_t)(total>>8);
+    out[32]=1; // source 1 = slave MCPWM GPIO capture, not motor encoder
+    memcpy(out+40,packet,20);put32w(out+60,now_crc32(out,60));return now_radio_send_wave(out);
+}
+// UUIDs: 6e400001/2/3-b5a3-f393-e0a9-e50e24dcca9e, little endian in NimBLE.
+static const ble_uuid128_t service_uuid = BLE_UUID128_INIT(
+    0x9e,0xca,0xdc,0x24,0x0e,0xe5,0xa9,0xe0,0x93,0xf3,0xa3,0xb5,0x01,0x00,0x40,0x6e);
+static const ble_uuid128_t command_uuid = BLE_UUID128_INIT(
+    0x9e,0xca,0xdc,0x24,0x0e,0xe5,0xa9,0xe0,0x93,0xf3,0xa3,0xb5,0x02,0x00,0x40,0x6e);
+static const ble_uuid128_t status_uuid = BLE_UUID128_INIT(
+    0x9e,0xca,0xdc,0x24,0x0e,0xe5,0xa9,0xe0,0x93,0xf3,0xa3,0xb5,0x03,0x00,0x40,0x6e);
+static const ble_uuid128_t pulse_uuid = BLE_UUID128_INIT(
+    0x9e,0xca,0xdc,0x24,0x0e,0xe5,0xa9,0xe0,0x93,0xf3,0xa3,0xb5,0x04,0x00,0x40,0x6e);
+static uint16_t pulse_handle;
+static bool pulse_subscribed;
+static int access_pulse(uint16_t c,uint16_t a,struct ble_gatt_access_ctxt *ctx,void *arg){
+    (void)c;(void)a;(void)ctx;(void)arg;return BLE_ATT_ERR_READ_NOT_PERMITTED;
+}
+static robot_control_t robot;
+static SemaphoreHandle_t lock;
+static uint16_t status_handle, connection = BLE_HS_CONN_HANDLE_NONE;
+static uint8_t own_addr_type;
+static bool subscribed;
+static robot_bridge_t bridge;
+static bool uart_available;
+static uint32_t now_ms(void) { return (uint32_t)(esp_timer_get_time()/1000); }
+static int access_status(uint16_t conn, uint16_t attr, struct ble_gatt_access_ctxt *ctx, void *arg) {
+    (void)conn; (void)attr; (void)arg;
+    uint8_t data[ROBOT_STATUS_SIZE];
+    xSemaphoreTake(lock, portMAX_DELAY); control_feedback(&robot,&bridge); robot_status(&robot, now_ms(), data); xSemaphoreGive(lock);
+    return os_mbuf_append(ctx->om, data, sizeof(data)) == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
+}
+static int access_command(uint16_t conn, uint16_t attr, struct ble_gatt_access_ctxt *ctx, void *arg) {
+    (void)conn; (void)attr; (void)arg;
+    uint8_t data[ROBOT_CMD_SIZE];
+    uint16_t len = 0;
+    if (OS_MBUF_PKTLEN(ctx->om) != sizeof(data) ||
+        ble_hs_mbuf_to_flat(ctx->om, data, sizeof(data), &len) != 0) {
+        xSemaphoreTake(lock, portMAX_DELAY);
+        robot_stop(&robot,ROBOT_BAD_COMMAND);
+        xSemaphoreGive(lock);
+        return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+    }
+    xSemaphoreTake(lock, portMAX_DELAY);
+    bool accepted = robot_command(&robot, data, len, now_ms());
+    uint8_t motion=robot.motion, speed=robot.speed;
+    xSemaphoreGive(lock);
+    ESP_LOGI("robot", "BLE command %s: motion=%u speed=%u; STM32 acknowledgement is separate",
+        accepted ? "accepted" : "rejected", motion, speed);
+    return accepted ? 0 : BLE_ATT_ERR_UNLIKELY;
+}
+static const struct ble_gatt_svc_def services[] = {
+    {.type=BLE_GATT_SVC_TYPE_PRIMARY, .uuid=&service_uuid.u,
+     .characteristics=(struct ble_gatt_chr_def[]) {
+        {.uuid=&command_uuid.u, .access_cb=access_command, .flags=BLE_GATT_CHR_F_WRITE},
+        {.uuid=&status_uuid.u, .access_cb=access_status,
+         .flags=BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY, .val_handle=&status_handle},
+        {.uuid=&pulse_uuid.u, .access_cb=access_pulse,
+         .flags=BLE_GATT_CHR_F_NOTIFY, .val_handle=&pulse_handle},
+        {0}}}, {0}
+};
+static int gap_event(struct ble_gap_event *event, void *arg);
+static void advertise(void) {
+    struct ble_hs_adv_fields fields = {0}, response = {0};
+    fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
+    fields.uuids128 = (ble_uuid128_t *)&service_uuid;
+    fields.num_uuids128 = 1; fields.uuids128_is_complete = 1;
+    const char *name = ble_svc_gap_device_name();
+    response.name = (uint8_t *)name; response.name_len = strlen(name); response.name_is_complete = 1;
+    int rc = ble_gap_adv_set_fields(&fields);
+    if (rc == 0) rc = ble_gap_adv_rsp_set_fields(&response);
+    struct ble_gap_adv_params params = {.conn_mode=BLE_GAP_CONN_MODE_UND, .disc_mode=BLE_GAP_DISC_MODE_GEN};
+    if (rc == 0) rc = ble_gap_adv_start(own_addr_type, NULL, BLE_HS_FOREVER, &params, gap_event, NULL);
+    if (rc) ESP_LOGE("robot", "Advertising failed: %d", rc);
+    else ESP_LOGI("robot", "Advertising ESP32-Robot");
+}
+static int gap_event(struct ble_gap_event *event, void *arg) {
+    (void)arg;
+    switch(event->type) {
+    case BLE_GAP_EVENT_CONNECT:
+        if (event->connect.status == 0) {
+            xSemaphoreTake(lock, portMAX_DELAY);
+            connection=event->connect.conn_handle; subscribed=false; pulse_subscribed=false;
+            now_ble_connection(&wireless, &robot, true); xSemaphoreGive(lock);
+            ESP_LOGI("robot", "Phone connected");
+        } else advertise();
+        break;
+    case BLE_GAP_EVENT_DISCONNECT:
+        xSemaphoreTake(lock, portMAX_DELAY);
+        connection=BLE_HS_CONN_HANDLE_NONE; subscribed=false; pulse_subscribed=false;
+        now_ble_connection(&wireless, &robot, false); xSemaphoreGive(lock);
+        ESP_LOGI("robot", "Disconnected: control stopped"); advertise(); break;
+    case BLE_GAP_EVENT_SUBSCRIBE:
+        if (event->subscribe.attr_handle == status_handle) {
+            xSemaphoreTake(lock, portMAX_DELAY);
+            subscribed = event->subscribe.cur_notify; xSemaphoreGive(lock);
+        }
+        if (event->subscribe.attr_handle == pulse_handle) {
+            xSemaphoreTake(lock, portMAX_DELAY);
+            pulse_subscribed=event->subscribe.cur_notify; xSemaphoreGive(lock);
+        }
+        break;
+    case BLE_GAP_EVENT_ADV_COMPLETE: advertise(); break;
+    default: break;
+    }
+    return 0;
+}
+static void sync_host(void) {
+    int rc=ble_hs_util_ensure_addr(0); assert(rc == 0);
+    rc=ble_hs_id_infer_auto(0, &own_addr_type); assert(rc == 0);
+    advertise();
+}
+static void reset_host(int reason) {
+    xSemaphoreTake(lock, portMAX_DELAY);
+    subscribed=false; pulse_subscribed=false; connection=BLE_HS_CONN_HANDLE_NONE; now_ble_connection(&wireless, &robot, false);
+    xSemaphoreGive(lock);
+    ESP_LOGE("robot", "BLE host reset: %d", reason);
+}
+static void host_task(void *arg) { (void)arg; nimble_port_run(); nimble_port_freertos_deinit(); }
+static void telemetry_task(void *arg) {
+    (void)arg; uint32_t last_battery=0,last_notify=0;uint16_t esp_mv=0;bool esp_battery_valid=false;
+    wire_parser_t parser={0};uint32_t last_radio_status=0,last_loop=0,max_gap=0,radio_generation=0,diag_at=0;
+    for (;;) {
+        uint32_t now=now_ms();
+        if(last_loop && now-last_loop>max_gap)max_gap=now-last_loop;
+        last_loop=now;
+        now_radio_stats_t rs;now_radio_stats(&rs);
+        uint16_t mv=0; bool sample=(uint32_t)(now-last_battery)>=500;
+        bool valid=sample ? battery_read(&mv) : false;
+        uint8_t data[ROBOT_STATUS_SIZE]; uint16_t conn; bool notify,pulse_notify;
+        uint8_t incoming[256];int count=uart_link_read(incoming,sizeof(incoming));wire_frame_t frame;
+        xSemaphoreTake(lock,portMAX_DELAY);
+        for(int i=0;i<count;++i)if(wire_feed(&parser,incoming[i],&frame))bridge_receive(&bridge,&frame,now);
+        bool transmit=false;wire_frame_t outgoing;
+        if(radio_generation!=rs.recoveries){radio_generation=rs.recoveries;now_control_link_lost(&wireless,&robot);}
+        control_feedback(&robot,&bridge);
+        robot.link_error=robot.uart_configured?(uart_available?bridge.error:ROBOT_UART_TX_ERROR):ROBOT_OK;
+        robot_tick(&robot, now);
+        now_control_tick(&wireless,&robot,now);
+        if(sample) { esp_battery_valid=valid;esp_mv=mv;last_battery=now; }
+        robot.battery_valid=esp_battery_valid;robot.battery_mv=esp_mv;
+        if(bridge.online&&(bridge.peer_flags&PEER_BATTERY)){robot.battery_valid=true;robot.battery_mv=bridge.battery_mv;}
+        // Both inputs use one owner and one bridge; callbacks never touch the UART.
+        // Poll only after applying STM32 state and lease expiry to reject obsolete commands.
+        for(int batch=0;batch<4;++batch) {
+            now_request_t request;uint32_t received;
+            if(!now_radio_receive(&request,&received))break;
+            if(request.node!=wireless.node)continue;
+            uint8_t result=request.kind==NOW_QUERY?NOW_OK:
+                now_control_command(&wireless,&robot,&request,received,now);
+            uint8_t response[NOW_FRAME_SIZE];
+            control_feedback(&robot,&bridge);
+            now_status_frame(&wireless,&robot,&request,result,now,response);
+            now_radio_send(response);
+        }
+        // Ping/retry cannot renew a motion lease.
+        bridge_profile(&bridge,robot.protocol,robot.accel,robot.decel);
+        bridge_parameters(&bridge,robot.mode,robot.forward_ms,robot.reverse_ms);
+        bridge_request(&bridge,robot.revision,robot.motion,robot.speed,robot.ack,now);
+        transmit=bridge_tick(&bridge,now,&outgoing);
+        control_feedback(&robot,&bridge);
+        robot.link_error=robot.uart_configured?(uart_available?bridge.error:ROBOT_UART_TX_ERROR):ROBOT_OK;
+        robot_tick(&robot,now);
+        // A timeout-generated stop supersedes any movement selected earlier in this tick.
+        if(robot.motion==ROBOT_STOP&&transmit&&(outgoing.type==WIRE_COMMAND||outgoing.type==WIRE_PROFILE)&&outgoing.payload[0]!=0){
+            bridge_request(&bridge,robot.revision,0,0,robot.ack,now);transmit=bridge_tick(&bridge,now,&outgoing);
+        }
+        robot_status(&robot, now, data); conn=connection; notify=subscribed; pulse_notify=pulse_subscribed;
+        oled_status_t display={.current_hz=robot.current_hz,.target_hz=robot.target_hz,.stage=robot.stm_phase,.uptime=now/1000U,.motion=robot.motion,.speed=robot.speed,
+            .error=robot.error?robot.error:robot.link_error,.ble=wireless.ble_connected,
+            .stm_online=robot.stm_online,.stm_motion=robot.stm_motion,.stm_error=robot.stm_error,
+            .confirmed=bridge.confirmed && !bridge.waiting && bridge.revision==robot.revision &&
+                bridge.completed_phone==robot.ack && bridge.online && (robot.stm_flags&PEER_APPLIED),
+            .source=wireless.ble_connected?1U:wireless.active?2U:0U};
+        xSemaphoreGive(lock);
+        if(transmit&&!uart_link_send(&outgoing)){xSemaphoreTake(lock,portMAX_DELAY);bridge_tx_failed(&bridge);xSemaphoreGive(lock);}
+        if(notify && conn!=BLE_HS_CONN_HANDLE_NONE&&(uint32_t)(now-last_notify)>=100) {
+            last_notify=now;
+            struct os_mbuf *om=ble_hs_mbuf_from_flat(data, sizeof(data));
+            if(om) { int rc=ble_gatts_notify_custom(conn, status_handle, om);
+                if(rc && rc!=BLE_HS_ENOTCONN) ESP_LOGD("robot", "Notify rc=%d", rc); }
+        }
+        if(wireless_available&&(uint32_t)(now-last_radio_status)>=200) {
+            uint8_t response[NOW_FRAME_SIZE];
+            xSemaphoreTake(lock,portMAX_DELAY);
+            now_control_tick(&wireless,&robot,now);
+            control_feedback(&robot,&bridge);
+            now_status_frame(&wireless,&robot,NULL,NOW_OK,now,response);
+            response[27]=1;response[28]=(uint8_t)esp_reset_reason();response[29]=(uint8_t)rs.rx_high;response[30]=(uint8_t)rs.tx_high;
+            response[31]=(uint8_t)rs.wave_drop;response[32]=(uint8_t)rs.rx_drop;response[33]=(uint8_t)(rs.rx_drop>>8);
+            response[34]=(uint8_t)rs.callback_timeout;response[35]=(uint8_t)(rs.callback_timeout>>8);
+            response[36]=(uint8_t)rs.recoveries;response[37]=(uint8_t)(rs.recoveries>>8);
+            response[38]=(uint8_t)max_gap;response[39]=(uint8_t)(max_gap>>8);
+            put32w(response+60,now_crc32(response,60));
+            xSemaphoreGive(lock);now_radio_send(response);last_radio_status=now;
+        }
+        xSemaphoreTake(lock,portMAX_DELAY);
+        bool radio_capture=wireless_available&&wireless.active&&!wireless.ble_connected;
+        xSemaphoreGive(lock);
+        pulse_capture_sink(radio_capture?radio_wave:NULL);
+        pulse_capture_poll(radio_capture?0xfffe:conn,pulse_handle,radio_capture||pulse_notify);
+        now_radio_service();
+        pulse_capture_status_t captured;pulse_capture_status(&captured);
+        display.capture_available=captured.available;display.pulse_recent=captured.recent;
+        display.pulse_hz=captured.hz;display.direction=captured.direction;
+        oled_status_publish(&display);
+        if(now-diag_at>=5000){diag_at=now;ESP_LOGI("link_diag","rx_drop=%lu wave_drop=%lu cb_timeout=%lu generation=%lu loop_max_ms=%lu uart_error=%u auth_fail=%lu",
+            (unsigned long)rs.rx_drop,(unsigned long)rs.wave_drop,(unsigned long)rs.callback_timeout,(unsigned long)rs.recoveries,(unsigned long)max_gap,display.error,(unsigned long)rs.auth_fail);}
+        vTaskDelay(pdMS_TO_TICKS(10)>0?pdMS_TO_TICKS(10):1);
+    }
+}
+void app_main(void) {
+    esp_err_t ret=nvs_flash_init();
+    if(ret==ESP_ERR_NVS_NO_FREE_PAGES || ret==ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase()); ret=nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(ret);
+    lock=xSemaphoreCreateMutex(); assert(lock); robot_init(&robot); battery_init();
+    uart_available=uart_link_init();
+#ifdef CONFIG_ROBOT_UART_ENABLED
+    robot.uart_configured=true;
+#endif
+    bridge_init(&bridge,uart_available,esp_random());
+#ifdef CONFIG_ROBOT_ESPNOW_ENABLED
+    now_control_init(&wireless,CONFIG_ROBOT_ESPNOW_NODE_ID,esp_random());
+#else
+    now_control_init(&wireless,1,esp_random());
+#endif
+    wireless_available=now_radio_init();
+    pulse_capture_init();
+    ESP_ERROR_CHECK(nimble_port_init());
+    ble_hs_cfg.sync_cb=sync_host; ble_hs_cfg.reset_cb=reset_host;
+    ble_svc_gap_init(); ble_svc_gatt_init();
+    ESP_ERROR_CHECK(ble_gatts_count_cfg(services)); ESP_ERROR_CHECK(ble_gatts_add_svcs(services));
+    ESP_ERROR_CHECK(ble_svc_gap_device_name_set("ESP32-Robot"));
+    nimble_port_freertos_init(host_task);
+    if(xTaskCreate(telemetry_task, "telemetry", 4096, NULL, 5, NULL)!=pdPASS) abort();
+    oled_status_start();
+    ESP_LOGI("robot", "Ready: BLE v3 / optional encrypted ESP-NOW WN/1 / UART v2; motor control requires STM32 acknowledgement");
+}
