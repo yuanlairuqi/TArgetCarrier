@@ -1,0 +1,87 @@
+[
+  {
+    "project": "stm",
+    "exit_code": 0,
+    "commands": [
+      [
+        "C:\\Espressif\\tools\\cmake\\4.0.3\\bin\\cmake.exe",
+        "-G",
+        "Ninja",
+        "-S",
+        "C:\\Users\\y\\Documents\\Codex\\2026-10-29\\thread-01a186c5-fcd7-7611-a9e6-10e70f9fc2c7-2\\work\\speed360\\src\\firmware\\stm32_f103",
+        "-B",
+        "C:\\Users\\y\\Documents\\Codex\\2026-10-29\\thread-01a186c5-fcd7-7611-a9e6-10e70f9fc2c7-2\\work\\speed360\\stm-build",
+        "-DCMAKE_TOOLCHAIN_FILE=C:\\Users\\y\\Documents\\Codex\\2026-10-29\\thread-01a186c5-fcd7-7611-a9e6-10e70f9fc2c7-2\\work\\speed360\\src\\cmake\\toolchain-stm32f103.cmake",
+        "-DPIO_PACKAGES_DIR=C:\\Users\\y\\Documents\\Codex\\2026-10-29\\thread-01a186c5-fcd7-7611-a9e6-10e70f9fc2c7-2\\work\\speed360\\sdk",
+        "-DCMAKE_MAKE_PROGRAM=C:\\Espressif\\tools\\ninja\\1.12.1\\ninja.exe"
+      ],
+      [
+        "C:\\Espressif\\tools\\cmake\\4.0.3\\bin\\cmake.exe",
+        "--build",
+        "C:\\Users\\y\\Documents\\Codex\\2026-10-29\\thread-01a186c5-fcd7-7611-a9e6-10e70f9fc2c7-2\\work\\speed360\\stm-build",
+        "-j",
+        "4"
+      ]
+    ]
+  },
+  {
+    "project": "esp",
+    "exit_code": 0,
+    "commands": [
+      [
+        "C:\\Espressif\\tools\\python\\v6.1\\venv\\Scripts\\python.exe",
+        "C:\\Espressif\\v6.1\\esp-idf\\tools\\idf.py",
+        "-C",
+        "C:\\Users\\y\\Documents\\Codex\\2026-10-29\\thread-01a186c5-fcd7-7611-a9e6-10e70f9fc2c7-2\\work\\speed360\\src\\firmware\\esp32_bridge\\ble_direct",
+        "-B",
+        "C:\\Users\\y\\Documents\\Codex\\2026-10-29\\thread-01a186c5-fcd7-7611-a9e6-10e70f9fc2c7-2\\work\\speed360\\esp-build",
+        "-D",
+        "IDF_TARGET=esp32s3",
+        "-D",
+        "SDKCONFIG=C:\\Users\\y\\Documents\\Codex\\2026-10-29\\thread-01a186c5-fcd7-7611-a9e6-10e70f9fc2c7-2\\work\\speed360\\esp-build\\sdkconfig",
+        "-D",
+        "SDKCONFIG_DEFAULTS=C:\\Users\\y\\Documents\\Codex\\2026-10-29\\thread-01a186c5-fcd7-7611-a9e6-10e70f9fc2c7-2\\work\\speed360\\src\\firmware\\esp32_bridge\\ble_direct\\sdkconfig.defaults;C:\\Users\\y\\Documents\\Codex\\2026-10-29\\thread-01a186c5-fcd7-7611-a9e6-10e70f9fc2c7-2\\work\\speed360\\src\\firmware\\esp32_bridge\\ble_direct\\pairing.local.defaults",
+        "build"
+      ]
+    ]
+  },
+  {
+    "project": "ui",
+    "exit_code": 0,
+    "commands": [
+      [
+        "C:/Users/y/Documents/Codex/2026-10-24/thread-01a16c69-048c-7ab0-a7f9-e1f49070f626/work/venv/Scripts/python.exe",
+        "-m",
+        "PyInstaller",
+        "--noconfirm",
+        "--windowed",
+        "--onedir",
+        "--name",
+        "TargetCarrier-Manual360",
+        "--distpath",
+        "C:\\Users\\y\\Documents\\Codex\\2026-10-29\\thread-01a186c5-fcd7-7611-a9e6-10e70f9fc2c7-2\\work\\speed360\\dist",
+        "--workpath",
+        "C:\\Users\\y\\Documents\\Codex\\2026-10-29\\thread-01a186c5-fcd7-7611-a9e6-10e70f9fc2c7-2\\work\\speed360\\ui-build",
+        "--specpath",
+        "C:\\Users\\y\\Documents\\Codex\\2026-10-29\\thread-01a186c5-fcd7-7611-a9e6-10e70f9fc2c7-2\\work\\speed360",
+        "--collect-all",
+        "webview",
+        "--collect-all",
+        "pythonnet",
+        "--collect-all",
+        "clr_loader",
+        "--collect-all",
+        "bleak",
+        "--collect-all",
+        "winrt",
+        "--hidden-import",
+        "clr",
+        "--hidden-import",
+        "serial.tools.list_ports_windows",
+        "--add-data",
+        "C:\\Users\\y\\Documents\\Codex\\2026-10-29\\thread-01a186c5-fcd7-7611-a9e6-10e70f9fc2c7-2\\work\\speed360\\pc\\web;web",
+        "C:\\Users\\y\\Documents\\Codex\\2026-10-29\\thread-01a186c5-fcd7-7611-a9e6-10e70f9fc2c7-2\\work\\speed360\\pc\\unified.py"
+      ]
+    ]
+  }
+]
