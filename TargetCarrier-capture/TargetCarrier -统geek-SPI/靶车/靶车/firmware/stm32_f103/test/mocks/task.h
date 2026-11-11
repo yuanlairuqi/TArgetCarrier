@@ -1,3 +1,0 @@
-#include "FreeRTOS.h"
-#define taskENTER_CRITICAL() ((void)0)
-#define taskEXIT_CRITICAL() ((void)0)

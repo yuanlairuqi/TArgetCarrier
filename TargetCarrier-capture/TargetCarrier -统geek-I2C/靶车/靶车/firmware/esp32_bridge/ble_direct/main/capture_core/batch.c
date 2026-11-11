@@ -1,9 +1,0 @@
-#include "batch.h"
-#include <string.h>
-static void p16(uint8_t*p,uint16_t x){p[0]=x;p[1]=x>>8;}
-static void p32(uint8_t*p,uint32_t x){for(unsigned i=0;i<4;i++)p[i]=(uint8_t)(x>>(8*i));}
-static uint16_t g16(const uint8_t*p){return (uint16_t)(p[0]|((uint16_t)p[1]<<8));}
-static uint32_t g32(const uint8_t*p){uint32_t n=0;for(unsigned i=0;i<4;i++)n|=(uint32_t)p[i]<<(8*i);return n;}
-static uint32_t crc(const uint8_t*p,size_t n){uint32_t c=~0u;while(n--){c^=*p++;for(int i=0;i<8;i++)c=(c>>1)^((0u-(c&1u))&0xedb88320u);}return ~c;}
-size_t cap_batch_encode(const cap_batch*b,uint8_t*out,size_t cap){if(!b||!out||!b->source||!b->boot||!b->period_us||b->type<1||b->type>3||!b->count||b->count>8)return 0;if(b->first_us>UINT64_MAX-(uint64_t)(b->count-1)*b->period_us)return 0;size_t n=40+4*b->count;if(cap<n)return 0;memset(out,0,n);out[0]='C';out[1]='B';out[2]=1;p32(out+4,b->source);p32(out+8,b->boot);p32(out+12,b->first_seq);p32(out+16,(uint32_t)b->first_us);p32(out+20,(uint32_t)(b->first_us>>32));p32(out+24,b->period_us);p16(out+28,b->channel);p16(out+30,b->unit);out[32]=b->type;out[33]=b->count;for(unsigned i=0;i<b->count;i++)p32(out+36+4*i,b->values[i]);p32(out+n-4,crc(out,n-4));return n;}
-bool cap_batch_decode(const uint8_t*p,size_t n,cap_batch*b){if(!p||!b||n<44||n>72||p[0]!='C'||p[1]!='B'||p[2]!=1||p[3]||p[34]||p[35]||p[33]<1||p[33]>8||n!=40+4u*p[33]||g32(p+n-4)!=crc(p,n-4))return false;cap_batch t={0};t.source=g32(p+4);t.boot=g32(p+8);t.first_seq=g32(p+12);t.first_us=g32(p+16)|((uint64_t)g32(p+20)<<32);t.period_us=g32(p+24);t.channel=g16(p+28);t.unit=g16(p+30);t.type=p[32];t.count=p[33];if(!t.source||!t.boot||!t.period_us||t.type<1||t.type>3||t.first_us>UINT64_MAX-(uint64_t)(t.count-1)*t.period_us)return false;for(unsigned i=0;i<t.count;i++)t.values[i]=g32(p+36+4*i);*b=t;return true;}
